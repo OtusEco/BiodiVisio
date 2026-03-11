@@ -1,0 +1,40 @@
+name: biodivisio
+description: "BiodiVisio est une application mobile pour visualiser et synthétiser les données naturalistes issues de GeoNature."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.6.0
+  flutter_map: ^8.2.2
+  flutter_map_marker_cluster: ^8.2.2
+  latlong2: ^0.9.1
+  shared_preferences: ^2.5.4
+  geolocator: ^14.0.2
+  intl: ^0.20.2
+  url_launcher: ^6.3.2
+  map_launcher: ^4.4.3
+  package_info_plus: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icone.png"
