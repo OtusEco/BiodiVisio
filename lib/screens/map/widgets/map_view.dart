@@ -72,6 +72,13 @@ class MapView extends StatelessWidget {
               },
             ),
           ),
+          // Ajout de l'échelle géographique avec Scalebar
+        const Scalebar(
+            textStyle: TextStyle(color: Colors.black, fontSize: 14),
+            padding: EdgeInsets.only(right: 10, left: 10, bottom: 10),
+            alignment: Alignment.bottomRight,
+            length: ScalebarLength.l,
+          ),
       ],
     );
   }
