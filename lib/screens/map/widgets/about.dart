@@ -131,124 +131,141 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                 const SizedBox(height: 16),
 
                 // Boutons
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 12,
-                  runSpacing: 8,
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final Uri url = Uri.parse(
-                          "https://github.com/OtusEco/BiodiVisio/issues/new?template=bug_report.md",
-                        );
-                        if (!await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        )) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Impossible d'ouvrir la page de signalement",
-                              ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final Uri url = Uri.parse(
+                                "https://github.com/OtusEco/BiodiVisio/issues/new",
+                              );
+                              if (!await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Impossible d'ouvrir la page de signalement",
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.bug_report),
+                            label: const Text("Problème"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                              foregroundColor: Colors.white,
                             ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.bug_report),
-                      label: const Text("Bug"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[600],
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final Uri url = Uri.parse(
-                          "https://github.com/OtusEco/BiodiVisio/issues/new?template=feature_request.md",
-                        );
-                        if (!await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        )) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Impossible d'ouvrir la page de suggestion",
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.lightbulb),
-                      label: const Text("Suggestion"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[600],
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final Uri url = Uri.parse(
-                          "https://github.com/OtusEco/BiodiVisio",
-                        );
-                        if (!await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        )) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Impossible d'ouvrir le dépôt GitHub",
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.code),
-                      label: const Text("Code"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[600],
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                // Contact
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    final body = Uri.encodeComponent(
-                      "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n#####",
-                    );
-                    final Uri emailLaunchUri = Uri(
-                      scheme: 'mailto',
-                      path: 'biodivisio@outlook.fr',
-                      query:
-                          "subject=BiodiVisio - Message depuis l'application&body=$body",
-                    );
-
-                    if (!await launchUrl(emailLaunchUri)) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Impossible d'ouvrir l'application mail",
                           ),
                         ),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.email),
-                  label: const Text("Contact"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[600],
-                    foregroundColor: Colors.white,
-                  ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final Uri url = Uri.parse(
+                                "https://github.com/OtusEco/BiodiVisio/issues/new",
+                              );
+                              if (!await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Impossible d'ouvrir la page de suggestion",
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.lightbulb),
+                            label: const Text("Suggestion"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final Uri url = Uri.parse(
+                                "https://github.com/OtusEco/BiodiVisio",
+                              );
+                              if (!await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Impossible d'ouvrir le dépôt GitHub",
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.code),
+                            label: const Text("Code source"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final body = Uri.encodeComponent(
+                                "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n#####",
+                              );
+                              final Uri emailLaunchUri = Uri(
+                                scheme: 'mailto',
+                                path: 'biodivisio@outlook.fr',
+                                query:
+                                    "subject=BiodiVisio - Message depuis l'application&body=$body",
+                              );
+
+                              if (!await launchUrl(emailLaunchUri)) {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Impossible d'ouvrir l'application mail",
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.email),
+                            label: const Text("Contact"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 12),
