@@ -45,7 +45,7 @@ class LocationFilterSection extends StatelessWidget {
             // COMMUNE
             _AreaSearchField(
               title: "Commune",
-              hint: "Rechercher une commune (min. 3 lettres)",
+              hint: "Rechercher une commune",
               apiCall: apiService.searchCommunes,
               selectedIds: selectedAreaComIds,
               selectedNames: selectedAreaComNames,
@@ -56,7 +56,7 @@ class LocationFilterSection extends StatelessWidget {
             // DÉPARTEMENT
             _AreaSearchField(
               title: "Département",
-              hint: "Rechercher un département (min. 3 lettres)",
+              hint: "Rechercher un département",
               apiCall: apiService.searchDepartements,
               selectedIds: selectedAreaDepIds,
               selectedNames: selectedAreaDepNames,

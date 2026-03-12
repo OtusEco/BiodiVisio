@@ -28,8 +28,8 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
 
   String get fieldHint {
     return searchType == TaxonSearchType.taxon
-        ? "Rechercher un taxon (min. 3 lettres)"
-        : "Rechercher un rang (min. 3 lettres)";
+        ? "Rechercher un taxon"
+        : "Rechercher un rang";
   }
 
   Future<void> _search(String value) async {
