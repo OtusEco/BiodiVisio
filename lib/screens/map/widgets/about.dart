@@ -107,14 +107,14 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                         children: [
                           Icon(Icons.location_on, color: Colors.blue),
                           SizedBox(width: 8),
-                          Text("Observation précise"),
+                          Text("Position précise"),
                         ],
                       ),
                       Row(
                         children: [
                           Icon(Icons.wrong_location, color: Colors.orange),
                           SizedBox(width: 8),
-                          Text("Observation imprécise"),
+                          Text("Position approximative"),
                         ],
                       ),
                       SizedBox(height: 4),
@@ -122,7 +122,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                         children: [
                           Icon(Icons.location_off, color: Colors.red),
                           SizedBox(width: 8),
-                          Text("Observation non diffusée précisément"),
+                          Text("Position non diffusée"),
                         ],
                       ),
                     ],
