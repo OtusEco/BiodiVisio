@@ -26,6 +26,12 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
   Timer? _debounce;
   TaxonSearchType searchType = TaxonSearchType.taxon;
 
+  String get fieldHint {
+    return searchType == TaxonSearchType.taxon
+        ? "Rechercher un taxon (min. 3 lettres)"
+        : "Rechercher un rang (min. 3 lettres)";
+  }
+
   Future<void> _search(String value) async {
     if (value.length < 3) {
       setState(() => suggestions = []);
@@ -73,7 +79,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             ),
             DropdownMenuItem(
               value: TaxonSearchType.ranks,
-              child: Text("Rangs taxonomiques"),
+              child: Text("Rang taxonomique"),
             ),
           ],
           onChanged: (value) {
@@ -87,12 +93,10 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
         ),
         const SizedBox(height: 10),
 
-        const Text("Taxon", style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 5),
         TextField(
           controller: _controller,
-          decoration: const InputDecoration(
-            hintText: "Rechercher un taxon (min. 3 lettres)",
+          decoration: InputDecoration(
+            hintText: fieldHint,
             border: OutlineInputBorder(),
             isDense: true,
           ),
@@ -106,7 +110,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
           final label = taxon["nom_vern"];
           final nomRang = taxon["nom_rang"];
 
-          // Affichage selon le type de recherche (taxons/rangs taxo)
+          // Affichage selon le type de recherche (taxon/rang taxo)
           final displayText = searchType == TaxonSearchType.ranks
               ? "$nomRang : ${lbNom ?? 'Inconnu'}"
               : (label != null &&
