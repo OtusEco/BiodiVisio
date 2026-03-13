@@ -23,6 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _loginFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   final ApiService _apiService = ApiService();
 
@@ -124,6 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
     _serverController.dispose();
     _loginController.dispose();
     _passwordController.dispose();
+    _loginFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -273,6 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       displayStringForOption: (option) => option.url,
                       onSelected: (selection) {
                         _serverController.text = selection.url;
+                        FocusScope.of(context).requestFocus(_loginFocusNode);
                       },
                       fieldViewBuilder: (context, controller, focusNode, onSubmit) {
                         return TextFormField(
@@ -359,6 +364,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Identifiant
                     TextFormField(
                       controller: _loginController,
+                      focusNode: _loginFocusNode,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: "Identifiant",
@@ -374,6 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Mot de passe
                     TextFormField(
                       controller: _passwordController,
+                      focusNode: _passwordFocusNode,
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _handleLogin(),
