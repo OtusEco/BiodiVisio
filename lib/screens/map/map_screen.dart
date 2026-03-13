@@ -196,6 +196,9 @@ class _MapScreenState extends State<MapScreen> {
                       observationId: obs["_id"].toString(),
                       cdNom: cdNom,
                       api: widget.apiService,
+                      isPolygon: obs["_isPolygon"] == true,
+                      lat: obs["_lat"],
+                      lon: obs["_lon"],
                     ),
                   );
                 } else {

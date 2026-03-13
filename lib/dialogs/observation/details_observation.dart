@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
+import './widget/share_position.dart';
 
 const Map<String, String> nomenclatureFieldLabels = {
   // Caractéristiques biologiques
@@ -72,12 +73,18 @@ class DetailObservationDialog extends StatefulWidget {
   final String observationId;
   final String cdNom;
   final ApiService api;
+  final double? lat;
+  final double? lon;
+  final bool isPolygon;
 
   const DetailObservationDialog({
     super.key,
     required this.observationId,
     required this.cdNom,
     required this.api,
+    this.lat,
+    this.lon,
+    required this.isPolygon,
   });
 
   @override
@@ -324,68 +331,77 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.link, size: 20),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Row(
-                                      children: const [
-                                        Icon(
-                                          Icons.warning,
-                                          color: Colors.orange,
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.link, size: 20),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.warning,
+                                              color: Colors.orange,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text('Attention'),
+                                          ],
                                         ),
-                                        SizedBox(width: 8),
-                                        Text('Attention'),
-                                      ],
-                                    ),
-                                    content: Text(
-                                      "Connexion nécessaire pour accèder à l'observation sur internet.\n\n"
-                                      "La page internet peut ne pas s'ouvrir -et donner une erreur- sur certains serveurs mal configurés.\n\n"
-                                      "Identifiant de l'observation : ${widget.observationId}",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          Navigator.of(context).pop();
+                                        content: Text(
+                                          "Connexion nécessaire pour accèder à l'observation sur internet.\n\n"
+                                          "La page internet peut ne pas s'ouvrir -et donner une erreur- sur certains serveurs mal configurés.\n\n"
+                                          "Identifiant de l'observation : ${widget.observationId}",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.of(context).pop();
 
-                                          final url = Uri.parse(
-                                            "$baseUrlClean/#/synthese/occurrence/${widget.observationId}/details",
-                                          );
+                                              final url = Uri.parse(
+                                                "$baseUrlClean/#/synthese/occurrence/${widget.observationId}/details",
+                                              );
 
-                                          final messenger =
-                                              ScaffoldMessenger.of(context);
+                                              final messenger =
+                                                  ScaffoldMessenger.of(context);
 
-                                          if (await canLaunchUrl(url)) {
-                                            await launchUrl(
-                                              url,
-                                              mode: LaunchMode
-                                                  .externalApplication,
-                                            );
-                                          } else {
-                                            messenger.showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  "Impossible d'ouvrir le lien",
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: const Text('Ouvrir la page'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                        child: const Text('Annuler'),
-                                      ),
-                                    ],
+                                              if (await canLaunchUrl(url)) {
+                                                await launchUrl(
+                                                  url,
+                                                  mode: LaunchMode
+                                                      .externalApplication,
+                                                );
+                                              } else {
+                                                messenger.showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "Impossible d'ouvrir le lien",
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            child: const Text('Ouvrir la page'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: const Text('Annuler'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
+                              ),
+                              MapActionButton(
+                                lat: widget.lat,
+                                lon: widget.lon,
+                                isPolygon: widget.isPolygon,
+                              ),
+                            ],
                           ),
                         ],
                       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:map_launcher/map_launcher.dart';
 
 import '../../services/api_service.dart';
+import './widget/share_position.dart';
 import 'details_observation.dart';
 
 class ObservationDialog extends StatelessWidget {
@@ -25,6 +25,7 @@ class ObservationDialog extends StatelessWidget {
       final date = DateTime.parse(rawDate);
       final timePart = rawDate.split('T').last;
       final hasTime = timePart != "00:00:00";
+
       return hasTime
           ? DateFormat('dd/MM/yyyy HH:mm').format(date)
           : DateFormat('dd/MM/yyyy').format(date);
@@ -33,53 +34,12 @@ class ObservationDialog extends StatelessWidget {
     }
   }
 
-  Future<void> openInMaps(BuildContext context, double lat, double lon) async {
-    final availableMaps = await MapLauncher.installedMaps;
-
-    if (availableMaps.isEmpty) return;
-    if (!context.mounted) return;
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                child: Text(
-                  "Ouvrir dans une application de cartes",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Divider(),
-              // Liste des applis installées
-              ...availableMaps.map((map) {
-                return ListTile(
-                  leading: const Icon(Icons.exit_to_app, size: 30),
-                  title: Text(map.mapName),
-                  onTap: () {
-                    map.showMarker(
-                      coords: Coords(lat, lon),
-                      title: "Observation",
-                    );
-                    Navigator.pop(context);
-                  },
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final hasPointObservation = observations.any(
+      (obs) => obs["_isPolygon"] != true,
+    );
+
     return Dialog(
       insetPadding: const EdgeInsets.all(16),
       backgroundColor: Colors.white,
@@ -93,11 +53,23 @@ class ObservationDialog extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Listes des observations",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              /// HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Liste des observations",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+
+                  if (hasPointObservation)
+                    MapActionButton(lat: lat, lon: lon, isPolygon: false),
+                ],
               ),
+
               const SizedBox(height: 12),
+
+              /// LISTE
               Expanded(
                 child: observations.isEmpty
                     ? const Center(
@@ -128,7 +100,6 @@ class ObservationDialog extends StatelessWidget {
                               : dateMin;
 
                           final cdNom = obs["cd_nom"]?.toString() ?? "";
-
                           final isPolygon = obs["_isPolygon"] == true;
 
                           return Container(
@@ -155,18 +126,6 @@ class ObservationDialog extends StatelessWidget {
                                 ),
                               ),
                               subtitle: Text(subtitle),
-                              trailing: isPolygon
-                                  ? null
-                                  : Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.directions),
-                                          onPressed: () =>
-                                              openInMaps(context, lat, lon),
-                                        ),
-                                      ],
-                                    ),
                               onTap: () {
                                 showDialog(
                                   context: context,
@@ -174,6 +133,9 @@ class ObservationDialog extends StatelessWidget {
                                     observationId: obs["_id"].toString(),
                                     cdNom: cdNom,
                                     api: api,
+                                    isPolygon: isPolygon,
+                                    lat: obs["_lat"],
+                                    lon: obs["_lon"],
                                   ),
                                 );
                               },
@@ -182,7 +144,10 @@ class ObservationDialog extends StatelessWidget {
                         },
                       ),
               ),
+
               const SizedBox(height: 12),
+
+              /// BOUTON FERMER
               Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(

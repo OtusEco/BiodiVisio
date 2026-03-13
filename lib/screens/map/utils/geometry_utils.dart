@@ -74,6 +74,13 @@ class GeoJsonParser {
     final lat = coords[1].toDouble();
     final lon = coords[0].toDouble();
 
+    // enrichir observations
+    for (var obs in observations) {
+      obs["_lat"] = lat;
+      obs["_lon"] = lon;
+      obs["_isPolygon"] = false;
+    }
+
     markers.add(
       MapMarkerData(
         position: LatLng(lat, lon),
@@ -102,6 +109,12 @@ class GeoJsonParser {
 
     final lat = sumLat / coords.length;
     final lon = sumLon / coords.length;
+
+    for (var obs in observations) {
+      obs["_lat"] = lat;
+      obs["_lon"] = lon;
+      obs["_isPolygon"] = false;
+    }
 
     markers.add(
       MapMarkerData(
@@ -139,13 +152,15 @@ class GeoJsonParser {
           ),
         );
 
-        // Marquer les observations comme polygone
-        for (var obs in observations) {
-          obs["_isPolygon"] = true;
-        }
-
         // Calcul du centroïde pour afficher un marker cliquable
         final centroid = calculatePolygonCentroid(points);
+
+        // Marquer les observations comme polygone + ajout des coordonnées
+        for (var obs in observations) {
+          obs["_lat"] = centroid.latitude;
+          obs["_lon"] = centroid.longitude;
+          obs["_isPolygon"] = true;
+        }
 
         markers.add(
           MapMarkerData(
