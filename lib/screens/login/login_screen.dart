@@ -94,6 +94,37 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _loadRecentServers();
+
+    _serverController.addListener(_onFieldChanged);
+    _loginController.addListener(_onFieldChanged);
+    _passwordController.addListener(_onFieldChanged);
+  }
+
+  void _onFieldChanged() {
+    setState(() {});
+  }
+
+  bool get _canLogin {
+    final server = _serverController.text.trim();
+    final login = _loginController.text.trim();
+    final password = _passwordController.text;
+
+    if (server.isEmpty || login.isEmpty || password.isEmpty) return false;
+
+    final uri = Uri.tryParse(server);
+    if (uri == null || !(uri.isScheme('http') || uri.isScheme('https'))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _serverController.dispose();
+    _loginController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadRecentServers() async {
@@ -192,6 +223,9 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: ListView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 40,
+            ),
             children: [
               // Logo
               Center(
@@ -241,8 +275,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         _serverController.text = selection.url;
                       },
                       fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                        controller.text = _serverController.text;
-
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
@@ -258,9 +290,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return "Veuillez saisir l'URL du serveur";
                             }
-                            if (!value.startsWith("http")) {
-                              return "URL invalide (doit commencer par http/https)";
+
+                            final trimmed = value.trim();
+
+                            if (trimmed.contains(' ')) {
+                              return "L'URL ne doit pas contenir d'espaces";
                             }
+
+                            final uri = Uri.tryParse(trimmed);
+                            if (uri == null) {
+                              return "URL invalide";
+                            }
+
+                            if (!(uri.isScheme('http') ||
+                                uri.isScheme('https'))) {
+                              return "L'URL doit commencer par http:// ou https://";
+                            }
+
+                            if (uri.host.isEmpty) {
+                              return "L'URL doit contenir un nom de domaine valide";
+                            }
+
                             return null;
                           },
                           onChanged: (value) {
@@ -309,6 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Identifiant
                     TextFormField(
                       controller: _loginController,
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: "Identifiant",
                         prefixIcon: const Icon(Icons.person_outline),
@@ -316,12 +367,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Veuillez saisir votre identifiant";
-                        }
-                        return null;
-                      },
                     ),
 
                     const SizedBox(height: 20),
@@ -330,6 +375,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _handleLogin(),
                       decoration: InputDecoration(
                         labelText: "Mot de passe",
                         prefixIcon: const Icon(Icons.lock_outline),
@@ -349,12 +396,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Veuillez saisir votre mot de passe";
-                        }
-                        return null;
-                      },
                     ),
 
                     const SizedBox(height: 30),
@@ -364,7 +405,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 52,
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _loading ? null : _handleLogin,
+                        onPressed: (_loading || !_canLogin)
+                            ? null
+                            : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
