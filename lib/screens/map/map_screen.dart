@@ -161,16 +161,33 @@ class _MapScreenState extends State<MapScreen> {
 
     try {
       String endpoint = "/synthese/for_web";
+
+      final body = _filters.toApiPayload(isFirstLoad: _isFirstLoad);
+
       if (_isFirstLoad) {
-        endpoint += "?limit=100";
+        endpoint += "?limit=100"; // pour serveurs classiques
+        body["limit"] = 100; // pour serveurs qui attendent dans le body
       }
 
-      final data = await widget.apiService.postForWeb(
-        endpoint,
-        body: _filters.toApiPayload(isFirstLoad: _isFirstLoad),
-      );
+      final data = await widget.apiService.postForWeb(endpoint, body: body);
 
-      final features = data["features"] as List;
+      List features;
+
+      if (data["features"] != null) {
+        // format GeoNature classique
+        features = List.from(data["features"]);
+      } else if (data["data"]?["features"] != null) {
+        // format serveur alternatif
+        features = (data["data"]["features"] as List).map((f) {
+          return {
+            "type": "Feature",
+            "geometry": {"type": f["type"], "coordinates": f["coordinates"]},
+            "properties": f["properties"] ?? {},
+          };
+        }).toList();
+      } else {
+        throw Exception("Format GeoJSON inconnu");
+      }
 
       final result = GeoJsonParser.parse(features);
 

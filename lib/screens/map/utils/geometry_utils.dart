@@ -26,6 +26,22 @@ class MapDataResult {
 
 // Parser GeoJSON
 class GeoJsonParser {
+  // Normalisation longitude
+  static double _normalizeLon(double lon) {
+    while (lon < -180) {
+      lon += 360;
+    }
+    while (lon > 180) {
+      lon -= 360;
+    }
+    return lon;
+  }
+
+  // Vérification coordonnées
+  static bool _isValidLatLon(double lat, double lon) {
+    return lat.abs() <= 90 && lon.abs() <= 180;
+  }
+
   // Parse la liste des features GeoJSON
   static MapDataResult parse(List features) {
     final List<MapMarkerData> markers = [];
@@ -71,8 +87,13 @@ class GeoJsonParser {
     List<MapMarkerData> markers,
   ) {
     final coords = geometry["coordinates"];
+
     final lat = coords[1].toDouble();
-    final lon = coords[0].toDouble();
+    double lon = coords[0].toDouble();
+
+    lon = _normalizeLon(lon);
+
+    if (!_isValidLatLon(lat, lon)) return;
 
     // enrichir observations
     for (var obs in observations) {
@@ -103,12 +124,20 @@ class GeoJsonParser {
     double sumLon = 0;
 
     for (var coord in coords) {
-      sumLat += coord[1].toDouble();
-      sumLon += coord[0].toDouble();
+      final lat = coord[1].toDouble();
+      double lon = coord[0].toDouble();
+      lon = _normalizeLon(lon);
+
+      if (!_isValidLatLon(lat, lon)) continue;
+
+      sumLat += lat;
+      sumLon += lon;
     }
 
     final lat = sumLat / coords.length;
     final lon = sumLon / coords.length;
+
+    if (!_isValidLatLon(lat, lon)) return;
 
     for (var obs in observations) {
       obs["_lat"] = lat;
@@ -137,11 +166,19 @@ class GeoJsonParser {
 
     for (var polygon in coords) {
       for (var ring in polygon) {
-        final points = ring
-            .map<LatLng>(
-              (coord) => LatLng(coord[1].toDouble(), coord[0].toDouble()),
-            )
-            .toList();
+        final points = <LatLng>[];
+
+        for (var coord in ring) {
+          final lat = coord[1].toDouble();
+          double lon = coord[0].toDouble();
+          lon = _normalizeLon(lon);
+
+          if (!_isValidLatLon(lat, lon)) continue;
+
+          points.add(LatLng(lat, lon));
+        }
+
+        if (points.isEmpty) continue;
 
         polygons.add(
           Polygon(
