@@ -3,6 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/api_service.dart';
 import '../map/map_screen.dart';
 
+class ServerItem {
+  final String name;
+  final String url;
+  final bool isRecent;
+
+  ServerItem({required this.name, required this.url, this.isRecent = false});
+}
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -23,14 +31,64 @@ class _LoginScreenState extends State<LoginScreen> {
 
   List<String> _recentServers = [];
 
-  final List<Map<String, String>> exampleServers = [
-    {"name": "Silene", "url": "https://expert.silene.eu"},
-    {"name": "Helix (CEN PACA)", "url": "https://helix.cen-paca.org"},
-    {
-      "name": "Biodiv'Aura Expert",
-      "url": "https://donnees.biodiversite-auvergne-rhone-alpes.fr",
-    },
+  final List<ServerItem> exampleServers = [
+    ServerItem(
+      name: "Biodiv'Aura Expert",
+      url: "https://donnees.biodiversite-auvergne-rhone-alpes.fr",
+    ),
+    ServerItem(
+      name: "Biodiv'Bretagne",
+      url: "https://data.biodiversite-bretagne.fr/geonature/",
+    ),
+    ServerItem(
+      name: "Biodiv'Occitanie",
+      url: "https://geonature.biodiv-occitanie.fr/",
+    ),
+    ServerItem(
+      name: "GeoNat'îdF",
+      url: "https://geonature.arb-idf.fr/geonature/",
+    ),
+    ServerItem(name: "Helix (CEN PACA)", url: "https://helix.cen-paca.org"),
+    ServerItem(name: "La SHF", url: "https://geonature.lashf.org/"),
+    ServerItem(name: "Lo Parvi", url: "https://geonature.loparvi.fr/"),
+    ServerItem(
+      name: "Parc National de forêts",
+      url: "https://geonature.forets-parcnational.fr/geonature/",
+    ),
+    ServerItem(
+      name: "PN amazonien de Guyane",
+      url: "https://geonature.parc-amazonien-guyane.fr/geonature/",
+    ),
+    ServerItem(
+      name: "PN des Pyrénées",
+      url: "https://geonature.pyrenees-parcnational.fr/geonature/",
+    ),
+    ServerItem(
+      name: "PNR du Marais poitevin",
+      url: "https://geonature.parc-marais-poitevin.fr",
+    ),
+    ServerItem(
+      name: "PNR Normandie-Maine",
+      url: "https://geonature.parc-naturel-normandie-maine.fr/geonature/",
+    ),
+    ServerItem(
+      name: "Réensauvager la Ferme",
+      url: "https://reensauvagerlaferme.fr/geonature/",
+    ),
+    ServerItem(
+      name: "SIFlora Expert (CBN Alpin)",
+      url: "https://geonature.cbn-alpin.fr",
+    ),
+    ServerItem(name: "Silene", url: "https://expert.silene.eu"),
   ];
+
+  List<ServerItem> get _serverSuggestions {
+    final recent = _recentServers
+        .map((url) => ServerItem(name: url, url: url, isRecent: true))
+        .toList();
+
+    return [...recent, ...exampleServers];
+  }
 
   @override
   void initState() {
@@ -52,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
       url = url.substring(0, url.length - 4);
     }
 
-    if (exampleServers.any((server) => server["url"] == url)) return;
+    if (exampleServers.any((server) => server.url == url)) return;
 
     _recentServers.remove(url);
     _recentServers.insert(0, url);
@@ -143,8 +201,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 100,
                 ),
               ),
-              const SizedBox(height: 0),
-
               // Sous-titre
               const Center(
                 child: Text(
@@ -166,25 +222,85 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // URL serveur
-                    TextFormField(
-                      controller: _serverController,
-                      decoration: InputDecoration(
-                        labelText: "URL du serveur GeoNature",
-                        hintText: "https://demo.geonature.fr/geonature/",
-                        prefixIcon: const Icon(Icons.public),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Veuillez saisir l'URL du serveur";
+                    /// Sélection du serveur
+                    Autocomplete<ServerItem>(
+                      optionsBuilder: (text) {
+                        final query = text.text.toLowerCase();
+
+                        if (query.isEmpty) {
+                          return _serverSuggestions;
                         }
-                        if (!value.startsWith("http")) {
-                          return "URL invalide (doit commencer par http/https)";
-                        }
-                        return null;
+
+                        return _serverSuggestions.where((server) {
+                          return server.name.toLowerCase().contains(query) ||
+                              server.url.toLowerCase().contains(query);
+                        });
+                      },
+                      displayStringForOption: (option) => option.url,
+                      onSelected: (selection) {
+                        _serverController.text = selection.url;
+                      },
+                      fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                        controller.text = _serverController.text;
+
+                        return TextFormField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            labelText: "Serveur GeoNature",
+                            hintText: "https://demo.geonature.fr/geonature/",
+                            prefixIcon: const Icon(Icons.public),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Veuillez saisir l'URL du serveur";
+                            }
+                            if (!value.startsWith("http")) {
+                              return "URL invalide (doit commencer par http/https)";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            _serverController.text = value;
+                          },
+                        );
+                      },
+                      optionsViewBuilder: (context, onSelected, options) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 6,
+                            borderRadius: BorderRadius.circular(14),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 250),
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount: options.length,
+                                itemBuilder: (context, index) {
+                                  final server = options.elementAt(index);
+
+                                  return ListTile(
+                                    leading: Icon(
+                                      server.isRecent
+                                          ? Icons.history
+                                          : Icons.storage,
+                                      color: server.isRecent
+                                          ? Colors.orange
+                                          : Theme.of(context).primaryColor,
+                                    ),
+                                    title: Text(server.name),
+                                    subtitle: Text(server.url),
+                                    onTap: () => onSelected(server),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
 
@@ -272,52 +388,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-
-              const SizedBox(height: 30),
-
-              // Serveurs exemples
-              const Text(
-                "Serveurs exemples",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              const SizedBox(height: 0),
-              Wrap(
-                spacing: 5,
-                runSpacing: 0,
-                children: exampleServers.map((server) {
-                  return ActionChip(
-                    avatar: const Icon(Icons.link, size: 18),
-                    label: Text(server["name"]!),
-                    onPressed: () {
-                      _serverController.text = server["url"]!;
-                    },
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 15),
-
-              // Serveurs récents
-              if (_recentServers.isNotEmpty) ...[
-                const Text(
-                  "Derniers serveurs utilisés",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                const SizedBox(height: 0),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _recentServers.map((url) {
-                    return ActionChip(
-                      avatar: const Icon(Icons.history, size: 18),
-                      label: Text(url),
-                      onPressed: () {
-                        _serverController.text = url;
-                      },
-                    );
-                  }).toList(),
-                ),
-              ],
             ],
           ),
         ),
