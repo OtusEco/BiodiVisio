@@ -23,6 +23,8 @@ class ApiService {
     "https://expert.silene.eu/api": "https://taxhub.silene.eu/api/taxref/",
     "https://donnees.biodiversite-auvergne-rhone-alpes.fr/api":
         "https://taxons.biodiversite-aura.fr/api/taxref/",
+        "https://reensauvagerlaferme.fr/geonature/api":
+        "https://reensauvagerlaferme.fr/taxhub/api/taxref/",
   };
 
   String get baseUrl => _apiBaseUrl!;
