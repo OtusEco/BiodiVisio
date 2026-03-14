@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/api_service.dart';
 import '../map/map_screen.dart';
@@ -28,11 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final ApiService _apiService = ApiService();
 
+  late Future<String> _appVersionFuture;
+  final String developerName = "Développé par OtusEco";
+
   bool _loading = false;
   bool _obscurePassword = true;
 
   List<String> _recentServers = [];
 
+  // liste de serveur dont l'accès est possible avec création de compte ou en accès public
   final List<ServerItem> exampleServers = [
     ServerItem(
       name: "Biodiv'Aura Expert",
@@ -96,10 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _loadRecentServers();
+    _appVersionFuture = _getAppVersion();
 
     _serverController.addListener(_onFieldChanged);
     _loginController.addListener(_onFieldChanged);
     _passwordController.addListener(_onFieldChanged);
+  }
+
+  Future<String> _getAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return "${packageInfo.version} (${packageInfo.buildNumber})";
   }
 
   void _onFieldChanged() {
@@ -447,6 +458,42 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
+              ),
+
+              const SizedBox(height: 30),
+
+              FutureBuilder<String>(
+                future: _appVersionFuture,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox();
+                  }
+
+                  final appVersion = snapshot.data!;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Version $appVersion",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          developerName,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
