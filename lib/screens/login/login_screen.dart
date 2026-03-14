@@ -40,30 +40,30 @@ class _LoginScreenState extends State<LoginScreen> {
     ),
     ServerItem(
       name: "Biodiv'Bretagne",
-      url: "https://data.biodiversite-bretagne.fr/geonature/",
+      url: "https://data.biodiversite-bretagne.fr/geonature",
     ),
     ServerItem(
       name: "Biodiv'Occitanie",
-      url: "https://geonature.biodiv-occitanie.fr/",
+      url: "https://geonature.biodiv-occitanie.fr",
     ),
     ServerItem(
       name: "GeoNat'îdF",
-      url: "https://geonature.arb-idf.fr/geonature/",
+      url: "https://geonature.arb-idf.fr/geonature",
     ),
     ServerItem(name: "Helix (CEN PACA)", url: "https://helix.cen-paca.org"),
-    ServerItem(name: "La SHF", url: "https://geonature.lashf.org/"),
-    ServerItem(name: "Lo Parvi", url: "https://geonature.loparvi.fr/"),
+    ServerItem(name: "La SHF", url: "https://geonature.lashf.org"),
+    ServerItem(name: "Lo Parvi", url: "https://geonature.loparvi.fr"),
     ServerItem(
       name: "Parc National de forêts",
-      url: "https://geonature.forets-parcnational.fr/geonature/",
+      url: "https://geonature.forets-parcnational.fr/geonature",
     ),
     ServerItem(
       name: "PN amazonien de Guyane",
-      url: "https://geonature.parc-amazonien-guyane.fr/geonature/",
+      url: "https://geonature.parc-amazonien-guyane.fr/geonature",
     ),
     ServerItem(
       name: "PN des Pyrénées",
-      url: "https://geonature.pyrenees-parcnational.fr/geonature/",
+      url: "https://geonature.pyrenees-parcnational.fr/geonature",
     ),
     ServerItem(
       name: "PNR du Marais poitevin",
@@ -71,11 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
     ),
     ServerItem(
       name: "PNR Normandie-Maine",
-      url: "https://geonature.parc-naturel-normandie-maine.fr/geonature/",
+      url: "https://geonature.parc-naturel-normandie-maine.fr/geonature",
     ),
     ServerItem(
       name: "Réensauvager la Ferme",
-      url: "https://reensauvagerlaferme.fr/geonature/",
+      url: "https://reensauvagerlaferme.fr/geonature",
     ),
     ServerItem(
       name: "SIFlora Expert (CBN Alpin)",
@@ -290,6 +290,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
+                            suffixIcon: controller.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      setState(() {
+                                        controller.clear(); // Vider le champ
+                                      });
+                                    },
+                                  )
+                                : null, // Afficher la croix uniquement si le champ n'est pas vide
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
