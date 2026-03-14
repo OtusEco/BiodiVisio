@@ -157,6 +157,90 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
     return nomVern;
   }
 
+  List<Widget> buildMediaSection(List medias) {
+    if (medias.isEmpty) return [];
+
+    return [
+      ExpansionTile(
+        title: const Text(
+          "Média(s)",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+        children: medias.map<Widget>((media) {
+          final path = media["media_path"];
+          if (path == null) return const SizedBox();
+
+          final url = "$baseUrlClean/api/$path";
+
+          final isImage =
+              path.toLowerCase().endsWith(".jpg") ||
+              path.toLowerCase().endsWith(".jpeg") ||
+              path.toLowerCase().endsWith(".png") ||
+              path.toLowerCase().endsWith(".webp");
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isImage)
+                  GestureDetector(
+                    onTap: () async {
+                      final uri = Uri.parse(url);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        url,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return const SizedBox(
+                            height: 200,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                else
+                  GestureDetector(
+                    onTap: () async {
+                      final uri = Uri.parse(url);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.play_circle_outline),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(url.split("/").last)),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    ];
+  }
+
   String? getNomenclatureLabel(Map props, String idField) {
     final suffix = idField.replaceFirst("id_", "");
     final nomenclature = props[suffix];
@@ -282,6 +366,8 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
             } else if (countMax != null) {
               count = "$countMax";
             }
+
+            final medias = props["medias"] ?? [];
 
             final datasetName = props['dataset']?['dataset_name'] ?? 'Inconnu';
             final acquisitionName =
@@ -554,7 +640,9 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                         ),
                       ],
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
+
+                      ...buildMediaSection(medias),
 
                       ExpansionTile(
                         title: const Text(
