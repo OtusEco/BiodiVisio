@@ -50,15 +50,20 @@ class MapFilters {
         filters["area_DEP"] = selectedAreaDepIds;
       }
 
-      if (dateMin != null && dateMax != null) {
-        if (dateMode == DateMode.period) {
+      if (dateMode == DateMode.period) {
+        if (dateMin != null && dateMax != null) {
           filters["period_start"] =
               "${dateMin!.day.toString().padLeft(2, '0')}/${dateMin!.month.toString().padLeft(2, '0')}";
           filters["period_end"] =
               "${dateMax!.day.toString().padLeft(2, '0')}/${dateMax!.month.toString().padLeft(2, '0')}";
-        } else {
+        }
+      } else {
+        if (dateMin != null) {
           filters["date_min"] =
               "${dateMin!.year}-${dateMin!.month.toString().padLeft(2, '0')}-${dateMin!.day.toString().padLeft(2, '0')}";
+        }
+
+        if (dateMax != null) {
           filters["date_max"] =
               "${dateMax!.year}-${dateMax!.month.toString().padLeft(2, '0')}-${dateMax!.day.toString().padLeft(2, '0')}";
         }
