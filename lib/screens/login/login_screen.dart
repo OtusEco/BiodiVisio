@@ -21,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _serverController = TextEditingController();
+  TextEditingController? _serverController;
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -103,10 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     _loadRecentServers();
     _appVersionFuture = _getAppVersion();
-
-    _serverController.addListener(_onFieldChanged);
-    _loginController.addListener(_onFieldChanged);
-    _passwordController.addListener(_onFieldChanged);
   }
 
   Future<String> _getAppVersion() async {
@@ -114,19 +110,18 @@ class _LoginScreenState extends State<LoginScreen> {
     return "${packageInfo.version} (${packageInfo.buildNumber})";
   }
 
-  void _onFieldChanged() {
-    setState(() {});
-  }
-
   bool get _canLogin {
-    final server = _serverController.text.trim();
+    final server = _serverController?.text.trim() ?? '';
     final login = _loginController.text.trim();
     final password = _passwordController.text;
 
     if (server.isEmpty || login.isEmpty || password.isEmpty) return false;
 
     final uri = Uri.tryParse(server);
-    if (uri == null || !(uri.isScheme('http') || uri.isScheme('https'))) {
+
+    if (uri == null ||
+        !(uri.isScheme('http') || uri.isScheme('https')) ||
+        uri.host.isEmpty) {
       return false;
     }
 
@@ -135,7 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _serverController.dispose();
     _loginController.dispose();
     _passwordController.dispose();
     _loginFocusNode.dispose();
@@ -145,6 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loadRecentServers() async {
     final prefs = await SharedPreferences.getInstance();
+
+    if (!mounted) return;
+
     setState(() {
       _recentServers = prefs.getStringList("recentServers") ?? [];
     });
@@ -171,11 +168,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
 
-    String baseUrl = _serverController.text.trim();
+    final serverController = _serverController;
+    if (serverController == null) return;
+
+    String baseUrl = serverController.text.trim();
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
@@ -300,283 +301,303 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Formulaire
                         child: Form(
                           key: _formKey,
-                          child: Column(
-                            children: [
-                              // Sélection du serveur
-                              Autocomplete<ServerItem>(
-                                optionsBuilder: (text) {
-                                  final query = text.text.toLowerCase();
+                          child: AutofillGroup(
+                            child: Column(
+                              children: [
+                                // Sélection du serveur
+                                Autocomplete<ServerItem>(
+                                  optionsBuilder: (text) {
+                                    final query = text.text.toLowerCase();
 
-                                  if (query.isEmpty) {
-                                    return _serverSuggestions;
-                                  }
+                                    if (query.isEmpty) {
+                                      return _serverSuggestions;
+                                    }
 
-                                  return _serverSuggestions.where((server) {
-                                    return server.name.toLowerCase().contains(
-                                          query,
-                                        ) ||
-                                        server.url.toLowerCase().contains(
-                                          query,
-                                        );
-                                  });
-                                },
-                                displayStringForOption: (option) => option.url,
-                                onSelected: (selection) {
-                                  _serverController.text = selection.url;
-                                  FocusScope.of(
-                                    context,
-                                  ).requestFocus(_loginFocusNode);
-                                },
-                                fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                                  return TextFormField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    decoration: InputDecoration(
-                                      labelText: "Serveur GeoNature",
-                                      hintText:
-                                          "https://demo.geonature.fr/geonature/",
-                                      prefixIcon: const Icon(Icons.public),
-                                      filled: true,
-                                      fillColor: const Color(0xFFF2F2F2),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      suffixIcon: controller.text.isNotEmpty
-                                          ? IconButton(
-                                              icon: const Icon(Icons.clear),
-                                              onPressed: () {
-                                                controller.clear();
-                                                _serverController.clear();
-                                                setState(() {});
-                                              },
-                                            )
-                                          : IconButton(
-                                              icon: Icon(
-                                                focusNode.hasFocus
-                                                    ? Icons.arrow_drop_up
-                                                    : Icons.arrow_drop_down,
-                                              ),
-                                              onPressed: () {
-                                                if (focusNode.hasFocus) {
-                                                  FocusScope.of(
-                                                    context,
-                                                  ).unfocus();
-                                                } else {
-                                                  FocusScope.of(
-                                                    context,
-                                                  ).requestFocus(focusNode);
-                                                }
-                                              },
-                                            ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return "Veuillez saisir l'URL du serveur";
-                                      }
+                                    return _serverSuggestions.where((server) {
+                                      return server.name.toLowerCase().contains(
+                                            query,
+                                          ) ||
+                                          server.url.toLowerCase().contains(
+                                            query,
+                                          );
+                                    });
+                                  },
+                                  displayStringForOption: (option) =>
+                                      option.url,
+                                  onSelected: (selection) {
+                                    _serverController?.text = selection.url;
+                                    FocusScope.of(
+                                      context,
+                                    ).requestFocus(_loginFocusNode);
+                                  },
+                                  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                                    _serverController ??= controller;
 
-                                      final trimmed = value.trim();
-
-                                      if (trimmed.contains(' ')) {
-                                        return "L'URL ne doit pas contenir d'espaces";
-                                      }
-
-                                      final uri = Uri.tryParse(trimmed);
-                                      if (uri == null) {
-                                        return "URL invalide";
-                                      }
-
-                                      if (!(uri.isScheme('http') ||
-                                          uri.isScheme('https'))) {
-                                        return "L'URL doit commencer par http:// ou https://";
-                                      }
-
-                                      if (uri.host.isEmpty) {
-                                        return "L'URL doit contenir un nom de domaine valide";
-                                      }
-
-                                      return null;
-                                    },
-                                    onChanged: (value) {
-                                      _serverController.text = value;
-                                    },
-                                  );
-                                },
-                                optionsViewBuilder:
-                                    (context, onSelected, options) {
-                                      return Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Material(
-                                          elevation: 6,
+                                    return TextFormField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      onChanged: (_) => setState(() {}),
+                                      decoration: InputDecoration(
+                                        labelText: "Serveur GeoNature",
+                                        hintText:
+                                            "https://demo.geonature.fr/geonature/",
+                                        prefixIcon: const Icon(Icons.public),
+                                        filled: true,
+                                        fillColor: const Color(0xFFF2F2F2),
+                                        border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
                                             14,
                                           ),
-                                          child: ConstrainedBox(
-                                            constraints: const BoxConstraints(
-                                              maxHeight: 250,
-                                            ),
-                                            child: ListView.builder(
-                                              padding: EdgeInsets.zero,
-                                              itemCount: options.length,
-                                              itemBuilder: (context, index) {
-                                                final server = options
-                                                    .elementAt(index);
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        suffixIcon: controller.text.isNotEmpty
+                                            ? IconButton(
+                                                icon: const Icon(Icons.clear),
+                                                onPressed: () {
+                                                  controller.clear();
+                                                  setState(() {});
+                                                },
+                                              )
+                                            : IconButton(
+                                                icon: Icon(
+                                                  focusNode.hasFocus
+                                                      ? Icons.arrow_drop_up
+                                                      : Icons.arrow_drop_down,
+                                                ),
+                                                onPressed: () {
+                                                  if (focusNode.hasFocus) {
+                                                    FocusScope.of(
+                                                      context,
+                                                    ).unfocus();
+                                                  } else {
+                                                    FocusScope.of(
+                                                      context,
+                                                    ).requestFocus(focusNode);
+                                                  }
+                                                },
+                                              ),
+                                      ),
+                                      validator: (value) {
+                                        if (value == null ||
+                                            value.trim().isEmpty) {
+                                          return "Veuillez saisir l'URL du serveur";
+                                        }
 
-                                                return ListTile(
-                                                  leading: CircleAvatar(
-                                                    radius: 16,
-                                                    backgroundColor:
-                                                        server.isRecent
-                                                        ? Colors.orange
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                        : Theme.of(context)
-                                                              .primaryColor
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              ),
-                                                    child: Icon(
-                                                      server.isRecent
-                                                          ? Icons.history
-                                                          : Icons.storage,
-                                                      size: 18,
-                                                      color: server.isRecent
-                                                          ? Colors.orange
-                                                          : Theme.of(
-                                                              context,
-                                                            ).primaryColor,
-                                                    ),
-                                                  ),
-                                                  title: Text(
-                                                    server.name,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  subtitle: Text(
-                                                    server.url,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                  onTap: () =>
-                                                      onSelected(server),
-                                                );
-                                              },
+                                        final trimmed = value.trim();
+
+                                        if (trimmed.contains(' ')) {
+                                          return "L'URL ne doit pas contenir d'espaces";
+                                        }
+
+                                        final uri = Uri.tryParse(trimmed);
+                                        if (uri == null) {
+                                          return "URL invalide";
+                                        }
+
+                                        if (!(uri.isScheme('http') ||
+                                            uri.isScheme('https'))) {
+                                          return "L'URL doit commencer par http:// ou https://";
+                                        }
+
+                                        if (uri.host.isEmpty) {
+                                          return "L'URL doit contenir un nom de domaine valide";
+                                        }
+
+                                        return null;
+                                      },
+                                    );
+                                  },
+                                  optionsViewBuilder:
+                                      (context, onSelected, options) {
+                                        return Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Material(
+                                            elevation: 6,
+                                            borderRadius: BorderRadius.circular(
+                                              14,
                                             ),
+                                            child: ConstrainedBox(
+                                              constraints: const BoxConstraints(
+                                                maxHeight: 250,
+                                              ),
+                                              child: ListView.builder(
+                                                padding: EdgeInsets.zero,
+                                                itemCount: options.length,
+                                                itemBuilder: (context, index) {
+                                                  final server = options
+                                                      .elementAt(index);
+
+                                                  return ListTile(
+                                                    leading: CircleAvatar(
+                                                      radius: 16,
+                                                      backgroundColor:
+                                                          server.isRecent
+                                                          ? Colors.orange
+                                                                .withValues(
+                                                                  alpha: 0.15,
+                                                                )
+                                                          : Theme.of(context)
+                                                                .primaryColor
+                                                                .withValues(
+                                                                  alpha: 0.15,
+                                                                ),
+                                                      child: Icon(
+                                                        server.isRecent
+                                                            ? Icons.history
+                                                            : Icons.storage,
+                                                        size: 18,
+                                                        color: server.isRecent
+                                                            ? Colors.orange
+                                                            : Theme.of(
+                                                                context,
+                                                              ).primaryColor,
+                                                      ),
+                                                    ),
+                                                    title: Text(
+                                                      server.name,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    subtitle: Text(
+                                                      server.url,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    onTap: () =>
+                                                        onSelected(server),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Identifiant
+                                TextFormField(
+                                  controller: _loginController,
+                                  focusNode: _loginFocusNode,
+                                  onChanged: (_) => setState(() {}),
+                                  textInputAction: TextInputAction.next,
+                                  onFieldSubmitted: (_) {
+                                    FocusScope.of(
+                                      context,
+                                    ).requestFocus(_passwordFocusNode);
+                                  },
+                                  autofillHints: const [AutofillHints.username],
+                                  decoration: InputDecoration(
+                                    labelText: "Nom d'utilisateur",
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color(0xFFF2F2F2),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Mot de passe
+                                TextFormField(
+                                  controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
+                                  obscureText: _obscurePassword,
+                                  onChanged: (_) => setState(() {}),
+                                  textInputAction: TextInputAction.done,
+                                  onFieldSubmitted: (_) => _handleLogin(),
+                                  autofillHints: const [AutofillHints.password],
+                                  decoration: InputDecoration(
+                                    labelText: "Mot de passe",
+                                    prefixIcon: const Icon(Icons.lock_outline),
+                                    filled: true,
+                                    fillColor: const Color(0xFFF2F2F2),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscurePassword = !_obscurePassword;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // Bouton connexion
+                                SizedBox(
+                                  height: 50,
+                                  width: double.infinity,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 250),
+                                    child: ElevatedButton(
+                                      onPressed: (_loading || !_canLogin)
+                                          ? null
+                                          : _handleLogin,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFF28A745,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            25,
                                           ),
                                         ),
-                                      );
-                                    },
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // Identifiant
-                              TextFormField(
-                                controller: _loginController,
-                                focusNode: _loginFocusNode,
-                                textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  labelText: "Nom d'utilisateur",
-                                  prefixIcon: const Icon(Icons.person_outline),
-                                  filled: true,
-                                  fillColor: const Color(0xFFF2F2F2),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // Mot de passe
-                              TextFormField(
-                                controller: _passwordController,
-                                focusNode: _passwordFocusNode,
-                                obscureText: _obscurePassword,
-                                textInputAction: TextInputAction.done,
-                                onFieldSubmitted: (_) => _handleLogin(),
-                                decoration: InputDecoration(
-                                  labelText: "Mot de passe",
-                                  prefixIcon: const Icon(Icons.lock_outline),
-                                  filled: true,
-                                  fillColor: const Color(0xFFF2F2F2),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 24),
-
-                              // Bouton connexion
-                              SizedBox(
-                                height: 50,
-                                width: double.infinity,
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 250),
-                                  child: ElevatedButton(
-                                    onPressed: (_loading || !_canLogin)
-                                        ? null
-                                        : _handleLogin,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF28A745),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
+                                        elevation: _canLogin ? 4 : 0,
                                       ),
-                                      elevation: _canLogin ? 4 : 0,
-                                    ),
-                                    child: AnimatedSwitcher(
-                                      duration: const Duration(
-                                        milliseconds: 200,
-                                      ),
-                                      transitionBuilder: (child, animation) =>
-                                          FadeTransition(
-                                            opacity: animation,
-                                            child: child,
-                                          ),
-                                      child: _loading
-                                          ? const SizedBox(
-                                              key: ValueKey("loader"),
-                                              height: 22,
-                                              width: 22,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.5,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          : const Text(
-                                              "SE CONNECTER",
-                                              key: ValueKey("text"),
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                letterSpacing: 1,
-                                              ),
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
+                                        transitionBuilder: (child, animation) =>
+                                            FadeTransition(
+                                              opacity: animation,
+                                              child: child,
                                             ),
+                                        child: _loading
+                                            ? const SizedBox(
+                                                key: ValueKey("loader"),
+                                                height: 22,
+                                                width: 22,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2.5,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : const Text(
+                                                "SE CONNECTER",
+                                                key: ValueKey("text"),
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1,
+                                                ),
+                                              ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
