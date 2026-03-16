@@ -7,6 +7,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
   // Récupération de PackageInfo pour avoir la version
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = "${packageInfo.version} (${packageInfo.buildNumber})";
+  final String developerName = "Développé par OtusEco";
 
   if (!context.mounted) return;
 
@@ -198,7 +199,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                     ),
 
                     const SizedBox(height: 8),
-                    
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -271,17 +272,30 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                 const SizedBox(height: 12),
 
                 // Version
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: Colors.grey,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Version $appVersion",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(height: 4),
                     Text(
-                      "Version $appVersion",
+                      developerName,
                       style: const TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                   ],
