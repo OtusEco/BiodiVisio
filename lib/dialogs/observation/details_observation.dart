@@ -172,12 +172,18 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
           final path = media["media_path"];
           if (path == null) return const SizedBox();
 
-          final url = "$baseUrlClean/api/$path";
+          const specialServers = ["https://reensauvagerlaferme.fr/geonature"];
+          final bool isSpecialServer = specialServers.contains(baseUrlClean);
+
+          final url = isSpecialServer
+              ? "$baseUrlClean/api/$path"
+              : "$baseUrlClean/api/media/attachments/$path";
 
           final isImage =
               path.toLowerCase().endsWith(".jpg") ||
               path.toLowerCase().endsWith(".jpeg") ||
               path.toLowerCase().endsWith(".png") ||
+              path.toLowerCase().endsWith(".gif") ||
               path.toLowerCase().endsWith(".webp");
 
           return Padding(
