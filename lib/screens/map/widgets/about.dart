@@ -236,7 +236,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                           child: ElevatedButton.icon(
                             onPressed: () async {
                               final body = Uri.encodeComponent(
-                                "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n#####",
+                                "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n- depuis à propos\n#####",
                               );
                               final Uri emailLaunchUri = Uri(
                                 scheme: 'mailto',
