@@ -36,12 +36,12 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Color(0xFF28A745),
               ),
             ),
             const TextSpan(
               text: "Carte des observations",
-              style: TextStyle(fontSize: 12, color: Colors.black),
+              style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),

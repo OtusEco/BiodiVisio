@@ -33,7 +33,7 @@ class DateFilterSection extends StatelessWidget {
           children: [
             Row(
               children: const [
-                Icon(Icons.date_range, size: 20, color: Colors.green),
+                Icon(Icons.date_range, size: 20, color: Color(0xFF3CB371)),
                 SizedBox(width: 5),
                 Text(
                   "Quand ?",

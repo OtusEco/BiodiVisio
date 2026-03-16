@@ -177,7 +177,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 20, color: Colors.green),
+                Icon(icon, size: 20, color: Color(0xFF3CB371)),
                 const SizedBox(width: 5),
                 Text(
                   title,
