@@ -498,8 +498,6 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                         ],
                       ),
 
-                      const SizedBox(height: 12),
-
                       Text.rich(
                         TextSpan(
                           children: [
@@ -512,10 +510,10 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   text: getFirstPart(
                                     taxSnapshot.data?["nom_vern"] ?? "",
                                   ),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.green[600],
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF28A745),
                                   ),
                                 ),
 
@@ -524,14 +522,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   ).isNotEmpty) &&
                                   ((taxSnapshot.data?["nom_valide"] ?? "")
                                       .isNotEmpty))
-                                TextSpan(
-                                  text: " · ",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.green[600],
-                                  ),
-                                ),
+                                const TextSpan(text: "\n"),
 
                               // nomValide en italique
                               if ((taxSnapshot.data?["nom_valide"] ?? "")
@@ -540,9 +531,8 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   text: taxSnapshot.data?["nom_valide"] ?? "",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.green[600],
                                     fontStyle: FontStyle.italic,
+                                    color: Color(0xFF28A745),
                                   ),
                                 ),
                             ],
@@ -550,7 +540,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                         ),
                       ),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       RichText(
                         text: TextSpan(
                           style: const TextStyle(
