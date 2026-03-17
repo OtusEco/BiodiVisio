@@ -235,494 +235,467 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Container(
             height: MediaQuery.of(context).size.height * 0.42,
-            color: const Color(0xFF3CB371),
+            color: const Color(0xFF28A745),
           ),
           SafeArea(
-            child: Column(
+            child: ListView(
+              padding: EdgeInsets.only(
+                left: 15,
+                right: 15,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 40,
+              ),
               children: [
-                /// ZONE SCROLLABLE
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.only(
-                      left: 15,
-                      right: 15,
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 40,
+                const SizedBox(height: 40),
+
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 200,
+                    height: 100,
+                  ),
+                ),
+                // Sous-titre
+                const Center(
+                  child: Text(
+                    "Application de visualisation des données de GeoNature",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black87,
                     ),
-                    children: [
-                      const SizedBox(height: 40),
-
-                      // Logo
-                      Center(
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          width: 200,
-                          height: 100,
-                        ),
-                      ),
-                      // Sous-titre
-                      const Center(
-                        child: Text(
-                          "Application de visualisation des données de GeoNature",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black87,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-
-                      const SizedBox(height: 60),
-
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 22,
-                          vertical: 26,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-
-                        // Formulaire
-                        child: Form(
-                          key: _formKey,
-                          child: AutofillGroup(
-                            child: Column(
-                              children: [
-                                // Sélection du serveur
-                                Autocomplete<ServerItem>(
-                                  optionsBuilder: (text) {
-                                    final query = text.text.toLowerCase();
-
-                                    if (query.isEmpty) {
-                                      return _serverSuggestions;
-                                    }
-
-                                    return _serverSuggestions.where((server) {
-                                      return server.name.toLowerCase().contains(
-                                            query,
-                                          ) ||
-                                          server.url.toLowerCase().contains(
-                                            query,
-                                          );
-                                    });
-                                  },
-                                  displayStringForOption: (option) =>
-                                      option.url,
-                                  onSelected: (selection) {
-                                    _serverController?.text = selection.url;
-                                    FocusScope.of(
-                                      context,
-                                    ).requestFocus(_loginFocusNode);
-                                  },
-                                  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                                    _serverController ??= controller;
-
-                                    return TextFormField(
-                                      controller: controller,
-                                      focusNode: focusNode,
-                                      onChanged: (_) => setState(() {}),
-                                      decoration: InputDecoration(
-                                        labelText: "Serveur GeoNature",
-                                        hintText:
-                                            "https://demo.geonature.fr/geonature/",
-                                        prefixIcon: const Icon(Icons.public),
-                                        filled: true,
-                                        fillColor: const Color(0xFFF2F2F2),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        suffixIcon: controller.text.isNotEmpty
-                                            ? IconButton(
-                                                icon: const Icon(Icons.clear),
-                                                onPressed: () {
-                                                  controller.clear();
-                                                  setState(() {});
-                                                },
-                                              )
-                                            : IconButton(
-                                                icon: Icon(
-                                                  focusNode.hasFocus
-                                                      ? Icons.arrow_drop_up
-                                                      : Icons.arrow_drop_down,
-                                                ),
-                                                onPressed: () {
-                                                  if (focusNode.hasFocus) {
-                                                    FocusScope.of(
-                                                      context,
-                                                    ).unfocus();
-                                                  } else {
-                                                    FocusScope.of(
-                                                      context,
-                                                    ).requestFocus(focusNode);
-                                                  }
-                                                },
-                                              ),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return "Veuillez saisir l'URL du serveur";
-                                        }
-
-                                        final trimmed = value.trim();
-
-                                        if (trimmed.contains(' ')) {
-                                          return "L'URL ne doit pas contenir d'espaces";
-                                        }
-
-                                        final uri = Uri.tryParse(trimmed);
-                                        if (uri == null) {
-                                          return "URL invalide";
-                                        }
-
-                                        if (!(uri.isScheme('http') ||
-                                            uri.isScheme('https'))) {
-                                          return "L'URL doit commencer par http:// ou https://";
-                                        }
-
-                                        if (uri.host.isEmpty) {
-                                          return "L'URL doit contenir un nom de domaine valide";
-                                        }
-
-                                        return null;
-                                      },
-                                    );
-                                  },
-                                  optionsViewBuilder:
-                                      (context, onSelected, options) {
-                                        return Align(
-                                          alignment: Alignment.topLeft,
-                                          child: Material(
-                                            elevation: 6,
-                                            borderRadius: BorderRadius.circular(
-                                              14,
-                                            ),
-                                            child: ConstrainedBox(
-                                              constraints: const BoxConstraints(
-                                                maxHeight: 250,
-                                              ),
-                                              child: ListView.builder(
-                                                padding: EdgeInsets.zero,
-                                                itemCount: options.length,
-                                                itemBuilder: (context, index) {
-                                                  final server = options
-                                                      .elementAt(index);
-
-                                                  return ListTile(
-                                                    leading: CircleAvatar(
-                                                      radius: 16,
-                                                      backgroundColor:
-                                                          server.isRecent
-                                                          ? Colors.orange
-                                                                .withValues(
-                                                                  alpha: 0.15,
-                                                                )
-                                                          : Theme.of(context)
-                                                                .primaryColor
-                                                                .withValues(
-                                                                  alpha: 0.15,
-                                                                ),
-                                                      child: Icon(
-                                                        server.isRecent
-                                                            ? Icons.history
-                                                            : Icons.storage,
-                                                        size: 18,
-                                                        color: server.isRecent
-                                                            ? Colors.orange
-                                                            : Theme.of(
-                                                                context,
-                                                              ).primaryColor,
-                                                      ),
-                                                    ),
-                                                    title: Text(
-                                                      server.name,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    subtitle: Text(
-                                                      server.url,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                    onTap: () =>
-                                                        onSelected(server),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                // Identifiant
-                                TextFormField(
-                                  controller: _loginController,
-                                  focusNode: _loginFocusNode,
-                                  onChanged: (_) => setState(() {}),
-                                  textInputAction: TextInputAction.next,
-                                  onFieldSubmitted: (_) {
-                                    FocusScope.of(
-                                      context,
-                                    ).requestFocus(_passwordFocusNode);
-                                  },
-                                  autofillHints: const [AutofillHints.username],
-                                  decoration: InputDecoration(
-                                    labelText: "Nom d'utilisateur",
-                                    prefixIcon: const Icon(
-                                      Icons.person_outline,
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color(0xFFF2F2F2),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                // Mot de passe
-                                TextFormField(
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocusNode,
-                                  obscureText: _obscurePassword,
-                                  onChanged: (_) => setState(() {}),
-                                  textInputAction: TextInputAction.done,
-                                  onFieldSubmitted: (_) => _handleLogin(),
-                                  autofillHints: const [AutofillHints.password],
-                                  decoration: InputDecoration(
-                                    labelText: "Mot de passe",
-                                    prefixIcon: const Icon(Icons.lock_outline),
-                                    filled: true,
-                                    fillColor: const Color(0xFFF2F2F2),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscurePassword
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscurePassword = !_obscurePassword;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 24),
-
-                                // Bouton connexion
-                                SizedBox(
-                                  height: 50,
-                                  width: double.infinity,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 250),
-                                    child: ElevatedButton(
-                                      onPressed: (_loading || !_canLogin)
-                                          ? null
-                                          : _handleLogin,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF28A745,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            25,
-                                          ),
-                                        ),
-                                        elevation: _canLogin ? 4 : 0,
-                                      ),
-                                      child: AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 200,
-                                        ),
-                                        transitionBuilder: (child, animation) =>
-                                            FadeTransition(
-                                              opacity: animation,
-                                              child: child,
-                                            ),
-                                        child: _loading
-                                            ? const SizedBox(
-                                                key: ValueKey("loader"),
-                                                height: 22,
-                                                width: 22,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2.5,
-                                                      color: Colors.white,
-                                                    ),
-                                              )
-                                            : const Text(
-                                                "SE CONNECTER",
-                                                key: ValueKey("text"),
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 1,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-                    ],
+                    textAlign: TextAlign.center,
                   ),
                 ),
 
-                // footer
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 18),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 60),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 26,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  
+                  // Formulaire
+                  child: Form(
+                    key: _formKey,
+                    child: AutofillGroup(
+                      child: Column(
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.email_outlined),
-                            onPressed: () async {
-                              final appVersion = await _appVersionFuture;
+                          // Sélection du serveur
+                          Autocomplete<ServerItem>(
+                            optionsBuilder: (text) {
+                              final query = text.text.toLowerCase();
 
-                              final body = Uri.encodeComponent(
-                                "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n- depuis l'écran de connexion\n#####",
-                              );
-                              final Uri emailLaunchUri = Uri(
-                                scheme: 'mailto',
-                                path: 'biodivisio@outlook.fr',
-                                query:
-                                    "subject=BiodiVisio - Message depuis l'application&body=$body",
-                              );
+                              if (query.isEmpty) {
+                                return _serverSuggestions;
+                              }
 
-                              if (!await launchUrl(emailLaunchUri)) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Impossible d'ouvrir l'application mail",
+                              return _serverSuggestions.where((server) {
+                                return server.name.toLowerCase().contains(
+                                      query,
+                                    ) ||
+                                    server.url.toLowerCase().contains(query);
+                              });
+                            },
+                            displayStringForOption: (option) => option.url,
+                            onSelected: (selection) {
+                              _serverController?.text = selection.url;
+                              FocusScope.of(
+                                context,
+                              ).requestFocus(_loginFocusNode);
+                            },
+                            fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                              _serverController ??= controller;
+
+                              return TextFormField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                onChanged: (_) => setState(() {}),
+                                decoration: InputDecoration(
+                                  labelText: "Serveur GeoNature",
+                                  hintText:
+                                      "https://demo.geonature.fr/geonature/",
+                                  prefixIcon: const Icon(Icons.public),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF2F2F2),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  suffixIcon: controller.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            controller.clear();
+                                            setState(() {});
+                                          },
+                                        )
+                                      : IconButton(
+                                          icon: Icon(
+                                            focusNode.hasFocus
+                                                ? Icons.arrow_drop_up
+                                                : Icons.arrow_drop_down,
+                                          ),
+                                          onPressed: () {
+                                            if (focusNode.hasFocus) {
+                                              FocusScope.of(context).unfocus();
+                                            } else {
+                                              FocusScope.of(
+                                                context,
+                                              ).requestFocus(focusNode);
+                                            }
+                                          },
+                                        ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return "Veuillez saisir l'URL du serveur";
+                                  }
+
+                                  final trimmed = value.trim();
+
+                                  if (trimmed.contains(' ')) {
+                                    return "L'URL ne doit pas contenir d'espaces";
+                                  }
+
+                                  final uri = Uri.tryParse(trimmed);
+                                  if (uri == null) {
+                                    return "URL invalide";
+                                  }
+
+                                  if (!(uri.isScheme('http') ||
+                                      uri.isScheme('https'))) {
+                                    return "L'URL doit commencer par http:// ou https://";
+                                  }
+
+                                  if (uri.host.isEmpty) {
+                                    return "L'URL doit contenir un nom de domaine valide";
+                                  }
+
+                                  return null;
+                                },
+                              );
+                            },
+                            optionsViewBuilder: (context, onSelected, options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  elevation: 6,
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxHeight: 250,
+                                    ),
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      itemCount: options.length,
+                                      itemBuilder: (context, index) {
+                                        final server = options.elementAt(index);
+
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                            radius: 16,
+                                            backgroundColor: server.isRecent
+                                                ? Colors.orange.withValues(
+                                                    alpha: 0.15,
+                                                  )
+                                                : Theme.of(context).primaryColor
+                                                      .withValues(alpha: 0.15),
+                                            child: Icon(
+                                              server.isRecent
+                                                  ? Icons.history
+                                                  : Icons.storage,
+                                              size: 18,
+                                              color: server.isRecent
+                                                  ? Colors.orange
+                                                  : Theme.of(
+                                                      context,
+                                                    ).primaryColor,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            server.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            server.url,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          onTap: () => onSelected(server),
+                                        );
+                                      },
                                     ),
                                   ),
-                                );
-                              }
+                                ),
+                              );
                             },
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.code),
-                            onPressed: () async {
-                              final Uri url = Uri.parse(
-                                "https://github.com/OtusEco/BiodiVisio",
-                              );
-                              if (!await launchUrl(
-                                url,
-                                mode: LaunchMode.externalApplication,
-                              )) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Impossible d'ouvrir le dépôt GitHub",
-                                    ),
-                                  ),
-                                );
-                              }
+
+                          const SizedBox(height: 16),
+
+                          // Identifiant
+                          TextFormField(
+                            controller: _loginController,
+                            focusNode: _loginFocusNode,
+                            onChanged: (_) => setState(() {}),
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(
+                                context,
+                              ).requestFocus(_passwordFocusNode);
                             },
+                            autofillHints: const [AutofillHints.username],
+                            decoration: InputDecoration(
+                              labelText: "Nom d'utilisateur",
+                              prefixIcon: const Icon(Icons.person_outline),
+                              filled: true,
+                              fillColor: const Color(0xFFF2F2F2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.language),
-                            onPressed: () async {
-                              final Uri url = Uri.parse(
-                                "https://biodivisio.otuseco.fr",
-                              );
-                              if (!await launchUrl(
-                                url,
-                                mode: LaunchMode.externalApplication,
-                              )) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Impossible d'ouvrir le site web",
-                                    ),
+
+                          const SizedBox(height: 16),
+
+                          // Mot de passe
+                          TextFormField(
+                            controller: _passwordController,
+                            focusNode: _passwordFocusNode,
+                            obscureText: _obscurePassword,
+                            onChanged: (_) => setState(() {}),
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _handleLogin(),
+                            autofillHints: const [AutofillHints.password],
+                            decoration: InputDecoration(
+                              labelText: "Mot de passe",
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              filled: true,
+                              fillColor: const Color(0xFFF2F2F2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Bouton connexion
+                          SizedBox(
+                            height: 50,
+                            width: double.infinity,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              child: ElevatedButton(
+                                onPressed: (_loading || !_canLogin)
+                                    ? null
+                                    : _handleLogin,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF28A745),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
-                                );
-                              }
-                            },
+                                  elevation: _canLogin ? 4 : 0,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 200),
+                                  transitionBuilder: (child, animation) =>
+                                      FadeTransition(
+                                        opacity: animation,
+                                        child: child,
+                                      ),
+                                  child: _loading
+                                      ? const SizedBox(
+                                          key: ValueKey("loader"),
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "SE CONNECTER",
+                                          key: ValueKey("text"),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-
-                      FutureBuilder<String>(
-                        future: _appVersionFuture,
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const SizedBox();
-                          }
-
-                          final appVersion = snapshot.data!;
-
-                          return Column(
-                            children: [
-                              Text(
-                                "Version $appVersion",
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                developerName,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 ),
+
+                const SizedBox(height: 20),
               ],
             ),
           ),
+
+          // footer
+          if (!isKeyboardOpen)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 12,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.email_outlined),
+                          onPressed: () async {
+                            final appVersion = await _appVersionFuture;
+
+                            final body = Uri.encodeComponent(
+                              "\r\n#####\nApplication BiodiVisio\n- version $appVersion\n- depuis l'écran de connexion\n#####",
+                            );
+                            final Uri emailLaunchUri = Uri(
+                              scheme: 'mailto',
+                              path: 'biodivisio@outlook.fr',
+                              query:
+                                  "subject=BiodiVisio - Message depuis l'application&body=$body",
+                            );
+
+                            if (!await launchUrl(emailLaunchUri)) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Impossible d'ouvrir l'application mail",
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.code),
+                          onPressed: () async {
+                            final Uri url = Uri.parse(
+                              "https://github.com/OtusEco/BiodiVisio",
+                            );
+                            if (!await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            )) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Impossible d'ouvrir le dépôt GitHub",
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.language),
+                          onPressed: () async {
+                            final Uri url = Uri.parse(
+                              "https://biodivisio.otuseco.fr",
+                            );
+                            if (!await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            )) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Impossible d'ouvrir le site web",
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+
+                    FutureBuilder<String>(
+                      future: _appVersionFuture,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const SizedBox();
+                        }
+
+                        final appVersion = snapshot.data!;
+
+                        return Column(
+                          children: [
+                            Text(
+                              "Version $appVersion",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              developerName,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
