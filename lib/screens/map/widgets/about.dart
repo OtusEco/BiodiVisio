@@ -43,7 +43,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                     children: [
                       const TextSpan(
                         text: "BiodiVisio",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3CB371)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF28A745)),
                       ),
                       const TextSpan(
                         text:
@@ -74,7 +74,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                       ),
                       const TextSpan(
                         text: "BiodiVisio",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3CB371)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF28A745)),
                       ),
                       const TextSpan(
                         text:

@@ -32,7 +32,7 @@ class LocationFilterSection extends StatelessWidget {
           children: [
             Row(
               children: const [
-                Icon(Icons.location_on, size: 20, color: Color(0xFF3CB371)),
+                Icon(Icons.location_on, size: 20, color: Color(0xFF28A745)),
                 SizedBox(width: 5),
                 Text(
                   "Où ?",
