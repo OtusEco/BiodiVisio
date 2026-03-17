@@ -47,66 +47,82 @@ Future<MapFilters?> showFilterDialog({
         builder: (context, scrollController) {
           return StatefulBuilder(
             builder: (context, setStateDialog) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Chercher des observations",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+              return Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Chercher des observations",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Taxon
+                          TaxonFilterSection(
+                            apiService: apiService,
+                            selectedCdRefs: selectedCdRefs,
+                            selectedTaxonLabels: selectedTaxonLabels,
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          // Localisation
+                          LocationFilterSection(
+                            apiService: apiService,
+                            selectedAreaComIds: selectedAreaComIds,
+                            selectedAreaComNames: selectedAreaComNames,
+                            selectedAreaDepIds: selectedAreaDepIds,
+                            selectedAreaDepNames: selectedAreaDepNames,
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          // Période
+                          DateFilterSection(
+                            dateMode: dateMode,
+                            dateMin: selectedDateMin,
+                            dateMax: selectedDateMax,
+                            onModeChanged: (mode) {
+                              setStateDialog(() => dateMode = mode);
+                            },
+                            onDateMinChanged: (date) {
+                              setStateDialog(() => selectedDateMin = date);
+                            },
+                            onDateMaxChanged: (date) {
+                              setStateDialog(() => selectedDateMax = date);
+                            },
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
                       ),
+                    ),
+                  ),
 
-                      const SizedBox(height: 20),
-
-                      // Taxon
-                      TaxonFilterSection(
-                        apiService: apiService,
-                        selectedCdRefs: selectedCdRefs,
-                        selectedTaxonLabels: selectedTaxonLabels,
+                  // Boutons
+                  SafeArea(
+                    top: false,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        12,
+                        16,
+                        12 + MediaQuery.of(context).viewInsets.bottom,
                       ),
-
-                      const SizedBox(height: 15),
-
-                      // Localisation
-                      LocationFilterSection(
-                        apiService: apiService,
-                        selectedAreaComIds: selectedAreaComIds,
-                        selectedAreaComNames: selectedAreaComNames,
-                        selectedAreaDepIds: selectedAreaDepIds,
-                        selectedAreaDepNames: selectedAreaDepNames,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        border: Border(top: BorderSide(color: Colors.black12)),
                       ),
-
-                      const SizedBox(height: 15),
-
-                      // Période
-                      DateFilterSection(
-                        dateMode: dateMode,
-                        dateMin: selectedDateMin,
-                        dateMax: selectedDateMax,
-                        onModeChanged: (mode) {
-                          setStateDialog(() => dateMode = mode);
-                        },
-                        onDateMinChanged: (date) {
-                          setStateDialog(() => selectedDateMin = date);
-                        },
-                        onDateMaxChanged: (date) {
-                          setStateDialog(() => selectedDateMax = date);
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Boutons
-                      Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
@@ -167,9 +183,9 @@ Future<MapFilters?> showFilterDialog({
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               );
             },
           );

@@ -28,31 +28,37 @@ class MapAttribution extends StatelessWidget {
     final text = expanded ? attributionText : baseMapType;
 
     return Positioned(
-      bottom: 8,
-      left: 8,
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          alignment: Alignment.bottomLeft,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: const [
-                BoxShadow(color: Colors.black26, blurRadius: 4),
-              ],
+      left: 0,
+      bottom: 0,
+      child: SafeArea(
+        minimum: EdgeInsets.only(
+          left: 8,
+          bottom: 8 + MediaQuery.of(context).padding.bottom,
+        ),
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            alignment: Alignment.bottomLeft,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 4),
+                ],
+              ),
+              child: expanded
+                  ? ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.75,
+                      ),
+                      child: _buildRow(text, allowWrap: true),
+                    )
+                  : IntrinsicWidth(child: _buildRow(text, allowWrap: false)),
             ),
-            child: expanded
-                ? ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.75,
-                    ),
-                    child: _buildRow(text, allowWrap: true),
-                  )
-                : IntrinsicWidth(child: _buildRow(text, allowWrap: false)),
           ),
         ),
       ),
