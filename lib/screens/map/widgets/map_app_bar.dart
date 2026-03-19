@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../theme/theme.dart';
 
 class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String subtitle;
@@ -36,12 +37,12 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF28A745),
+                color: AppColors.primary,
               ),
             ),
             const TextSpan(
               text: "Carte des observations",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -89,7 +90,10 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
             onTap: onFilter,
             child: Text(
               subtitle,
-              style: const TextStyle(color: Colors.black87, fontSize: 14),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

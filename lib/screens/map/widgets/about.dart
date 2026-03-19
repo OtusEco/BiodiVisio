@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../theme/theme.dart';
 
 Future<void> showAboutBottomSheet(BuildContext context) async {
   // Récupération de PackageInfo pour avoir la version
@@ -43,7 +44,10 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                     children: [
                       const TextSpan(
                         text: "BiodiVisio",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF28A745)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const TextSpan(
                         text:
@@ -74,7 +78,10 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                       ),
                       const TextSpan(
                         text: "BiodiVisio",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF28A745)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const TextSpan(
                         text:
@@ -281,14 +288,14 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                         const Icon(
                           Icons.info_outline,
                           size: 16,
-                          color: Colors.grey,
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           "Version $appVersion",
                           style: const TextStyle(
                             fontSize: 13,
-                            color: Colors.grey,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -296,7 +303,10 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                     const SizedBox(height: 4),
                     Text(
                       developerName,
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
 import '../map/map_screen.dart';
+import '../../theme/theme.dart';
 
 class ServerItem {
   final String name;
@@ -212,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ..showSnackBar(
           SnackBar(
             content: Text("⚠️ ${e.message}"),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
           ),
@@ -224,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ..showSnackBar(
           const SnackBar(
             content: Text("⚠️ Erreur inattendue"),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -243,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Container(
             height: MediaQuery.of(context).size.height * 0.42,
-            color: const Color(0xFF28A745),
+            color: AppColors.primary,
           ),
           SafeArea(
             child: ListView(
@@ -271,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.italic,
-                      color: Colors.black87,
+                      color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -285,17 +286,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     vertical: 26,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.card,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: AppColors.shadow.withValues(alpha: 0.08),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  
+
                   // Formulaire
                   child: Form(
                     key: _formKey,
@@ -338,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       "https://demo.geonature.fr/geonature/",
                                   prefixIcon: const Icon(Icons.public),
                                   filled: true,
-                                  fillColor: const Color(0xFFF2F2F2),
+                                  fillColor: AppColors.inputFill,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -417,21 +418,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                           leading: CircleAvatar(
                                             radius: 16,
                                             backgroundColor: server.isRecent
-                                                ? Colors.orange.withValues(
+                                                ? AppColors.warning.withValues(
                                                     alpha: 0.15,
                                                   )
-                                                : Theme.of(context).primaryColor
-                                                      .withValues(alpha: 0.15),
+                                                : AppColors.primary.withValues(
+                                                    alpha: 0.15,
+                                                  ),
                                             child: Icon(
                                               server.isRecent
                                                   ? Icons.history
                                                   : Icons.storage,
                                               size: 18,
                                               color: server.isRecent
-                                                  ? Colors.orange
-                                                  : Theme.of(
-                                                      context,
-                                                    ).primaryColor,
+                                                  ? AppColors.warning
+                                                  : AppColors.primary,
                                             ),
                                           ),
                                           title: Text(
@@ -472,7 +472,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: "Nom d'utilisateur",
                               prefixIcon: const Icon(Icons.person_outline),
                               filled: true,
-                              fillColor: const Color(0xFFF2F2F2),
+                              fillColor: AppColors.inputFill,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 borderSide: BorderSide.none,
@@ -495,7 +495,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: "Mot de passe",
                               prefixIcon: const Icon(Icons.lock_outline),
                               filled: true,
-                              fillColor: const Color(0xFFF2F2F2),
+                              fillColor: AppColors.inputFill,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 borderSide: BorderSide.none,
@@ -528,7 +528,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ? null
                                     : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF28A745),
+                                  backgroundColor: AppColors.secondary,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
@@ -677,7 +677,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               "Version $appVersion",
                               style: const TextStyle(
                                 fontSize: 13,
-                                color: Colors.grey,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -685,7 +685,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               developerName,
                               style: const TextStyle(
                                 fontSize: 13,
-                                color: Colors.grey,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],

@@ -17,6 +17,7 @@ import 'widgets/about.dart';
 
 import 'utils/geometry_utils.dart';
 import '../login/login_screen.dart';
+import '../../theme/theme.dart';
 
 class MapScreen extends StatefulWidget {
   final ApiService apiService;
@@ -263,7 +264,7 @@ class _MapScreenState extends State<MapScreen> {
         ..showSnackBar(
           SnackBar(
             content: Text("⚠️ ${e.message}"),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -277,7 +278,7 @@ class _MapScreenState extends State<MapScreen> {
         ..showSnackBar(
           const SnackBar(
             content: Text("⚠️ Erreur inattendue"),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -300,11 +301,11 @@ class _MapScreenState extends State<MapScreen> {
   Color _colorForType(MarkerType type) {
     switch (type) {
       case MarkerType.point:
-        return Colors.blue;
+        return AppColors.mapPoint;
       case MarkerType.line:
-        return Colors.orange;
+        return AppColors.mapLine;
       case MarkerType.polygon:
-        return Colors.red;
+        return AppColors.mapPolygon;
     }
   }
 
