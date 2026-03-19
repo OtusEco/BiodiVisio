@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../theme/theme.dart';
 
 enum DateFilterMode { betweenDates, period }
 
@@ -33,7 +34,7 @@ class DateFilterSection extends StatelessWidget {
           children: [
             Row(
               children: const [
-                Icon(Icons.date_range, size: 20, color: Color(0xFF28A745)),
+                Icon(Icons.date_range, size: 20, color: AppColors.primary),
                 SizedBox(width: 5),
                 Text(
                   "Quand ?",
@@ -138,7 +139,7 @@ class DateFilterSection extends StatelessWidget {
                   const SizedBox(height: 6),
                   const Text(
                     "Ex : du 01/03 au 30/03 chaque année",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -152,10 +153,10 @@ class DateFilterSection extends StatelessWidget {
                   onDateMinChanged(null);
                   onDateMaxChanged(null);
                 },
-                icon: const Icon(Icons.clear, color: Colors.red),
+                icon: const Icon(Icons.clear, color: AppColors.error),
                 label: const Text(
                   "Effacer les dates",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppColors.error),
                 ),
               ),
             ),

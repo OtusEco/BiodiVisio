@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
+import '../../../theme/theme.dart';
 
 class LocationFilterSection extends StatelessWidget {
   final ApiService apiService;
@@ -32,7 +33,7 @@ class LocationFilterSection extends StatelessWidget {
           children: [
             Row(
               children: const [
-                Icon(Icons.location_on, size: 20, color: Color(0xFF28A745)),
+                Icon(Icons.location_on, size: 20, color: AppColors.primary),
                 SizedBox(width: 5),
                 Text(
                   "Où ?",

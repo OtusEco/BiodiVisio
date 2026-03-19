@@ -5,6 +5,7 @@ import '../../models/map_search.dart';
 import 'widgets/taxon_filter.dart';
 import 'widgets/location_filter.dart';
 import 'widgets/date_filter.dart';
+import '../../theme/theme.dart';
 
 Future<MapFilters?> showFilterDialog({
   required BuildContext context,
@@ -37,7 +38,7 @@ Future<MapFilters?> showFilterDialog({
   return showModalBottomSheet<MapFilters>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor: AppColors.background,
     builder: (context) {
       return DraggableScrollableSheet(
         initialChildSize: 0.9,
@@ -119,8 +120,10 @@ Future<MapFilters?> showFilterDialog({
                         12 + MediaQuery.of(context).viewInsets.bottom,
                       ),
                       decoration: const BoxDecoration(
-                        color: Colors.white,
-                        border: Border(top: BorderSide(color: Colors.black12)),
+                        color: AppColors.card,
+                        border: Border(
+                          top: BorderSide(color: AppColors.border),
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,7 +145,7 @@ Future<MapFilters?> showFilterDialog({
                             child: const Text(
                               "Effacer",
                               style: TextStyle(
-                                color: Colors.red,
+                                color: AppColors.error,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

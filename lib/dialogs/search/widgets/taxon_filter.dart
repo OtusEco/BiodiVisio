@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
+import '../../../theme/theme.dart';
 
 enum TaxonSearchType { taxon, ranks }
 
@@ -177,7 +178,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 20, color: Color(0xFF28A745)),
+                Icon(icon, size: 20, color: AppColors.primary),
                 const SizedBox(width: 5),
                 Text(
                   title,
