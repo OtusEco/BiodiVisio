@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/login/login_screen.dart';
+import 'theme/theme.dart';
 
 void main() {
-  runApp(const GeoNatureApp());
+  runApp(const BiodiVisio());
 }
 
-class GeoNatureApp extends StatelessWidget {
-  const GeoNatureApp({super.key});
+class BiodiVisio extends StatelessWidget {
+  const BiodiVisio({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'GeoNature Mobile',
-      theme: ThemeData(primarySwatch: Colors.green),
+      title: 'BiodiVisio',
+      theme: AppTheme.biodivisioTheme,
 
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
