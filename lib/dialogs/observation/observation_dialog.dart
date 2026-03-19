@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import './widget/share_position.dart';
 import 'details_observation.dart';
+import '../../theme/theme.dart';
 
 class ObservationDialog extends StatelessWidget {
   final List observations;
@@ -42,7 +43,7 @@ class ObservationDialog extends StatelessWidget {
 
     return Dialog(
       insetPadding: const EdgeInsets.all(16),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -53,34 +54,58 @@ class ObservationDialog extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Liste des observations",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Titre
+                    const Expanded(
+                      child: Text(
+                        "Liste des observations",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
 
-                  if (hasPointObservation)
-                    MapActionButton(lat: lat, lon: lon, isPolygon: false),
-                ],
+                    // Bouton à droite
+                    Row(
+                      children: [
+                        if (hasPointObservation)
+                          MapActionButton(lat: lat, lon: lon, isPolygon: false),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 12),
 
-              /// LISTE
               Expanded(
                 child: observations.isEmpty
                     ? const Center(
                         child: Text(
                           "Aucune observation",
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       )
                     : ListView.separated(
                         itemCount: observations.length,
-                        separatorBuilder: (_, _) => const Divider(),
+                        separatorBuilder: (_, _) =>
+                            const Divider(color: AppColors.border),
                         itemBuilder: (context, index) {
                           final obs = observations[index];
 
@@ -117,7 +142,7 @@ class ObservationDialog extends StatelessWidget {
                               leading: const Icon(
                                 Icons.info_outline,
                                 size: 25,
-                                color: Colors.green,
+                                color: AppColors.secondary,
                               ),
                               title: Text(
                                 species,
@@ -147,7 +172,6 @@ class ObservationDialog extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              /// BOUTON FERMER
               Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
 import './widget/share_position.dart';
+import '../../theme/theme.dart';
 
 const Map<String, String> nomenclatureFieldLabels = {
   // Caractéristiques biologiques
@@ -227,7 +228,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
+                        border: Border.all(color: AppColors.border),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -301,18 +302,18 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
   Color getValidationStatusColor(String? status) {
     switch (status?.toLowerCase()) {
       case "certain - très probable":
-        return Colors.green;
+        return AppColors.success;
       case "en attente de validation":
       case "probable":
-        return Colors.orange;
+        return AppColors.warning;
       case "douteux":
       case "invalide":
-        return Colors.red;
+        return AppColors.error;
       case "inconnu":
       case "non réalisable":
-        return Colors.grey;
+        return AppColors.textSecondary;
       default:
-        return Colors.grey;
+        return AppColors.textSecondary;
     }
   }
 
@@ -339,7 +340,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                 child: Center(
                   child: Text(
                     "Erreur lors du chargement de l'observation",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: AppColors.error),
                   ),
                 ),
               );
@@ -402,7 +403,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                     child: Center(
                       child: Text(
                         "Erreur lors du chargement des informations taxonomiques.",
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(color: AppColors.error),
                       ),
                     ),
                   );
@@ -413,90 +414,112 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Détails de l'observation",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Titre
+                            const Expanded(
+                              child: Text(
+                                "Détails de l'observation",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.link, size: 20),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Row(
-                                          children: const [
-                                            Icon(
-                                              Icons.warning,
-                                              color: Colors.orange,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Attention'),
-                                          ],
-                                        ),
-                                        content: Text(
-                                          "Connexion nécessaire pour accèder à l'observation sur internet.\n\n"
-                                          "La page internet peut ne pas s'ouvrir -et donner une erreur- sur certains serveurs mal configurés.\n\n"
-                                          "Identifiant de l'observation : ${widget.observationId}",
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () async {
-                                              Navigator.of(context).pop();
 
-                                              final url = Uri.parse(
-                                                "$baseUrlClean/#/synthese/occurrence/${widget.observationId}/details",
-                                              );
+                            // Boutons à droite
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.link, size: 20),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Row(
+                                            children: const [
+                                              Icon(
+                                                Icons.warning,
+                                                color: Colors.orange,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text('Attention'),
+                                            ],
+                                          ),
+                                          content: Text(
+                                            "Connexion nécessaire pour accèder à l'observation sur internet.\n\n"
+                                            "La page internet peut ne pas s'ouvrir -et donner une erreur- sur certains serveurs mal configurés.\n\n"
+                                            "Identifiant de l'observation : ${widget.observationId}",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
 
-                                              final messenger =
-                                                  ScaffoldMessenger.of(context);
-
-                                              if (await canLaunchUrl(url)) {
-                                                await launchUrl(
-                                                  url,
-                                                  mode: LaunchMode
-                                                      .externalApplication,
+                                                final url = Uri.parse(
+                                                  "$baseUrlClean/#/synthese/occurrence/${widget.observationId}/details",
                                                 );
-                                              } else {
-                                                messenger.showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                      "Impossible d'ouvrir le lien",
+
+                                                final messenger =
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    );
+
+                                                if (await canLaunchUrl(url)) {
+                                                  await launchUrl(
+                                                    url,
+                                                    mode: LaunchMode
+                                                        .externalApplication,
+                                                  );
+                                                } else {
+                                                  messenger.showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Impossible d'ouvrir le lien",
+                                                      ),
                                                     ),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            child: const Text('Ouvrir la page'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(),
-                                            child: const Text('Annuler'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                              MapActionButton(
-                                lat: widget.lat,
-                                lon: widget.lon,
-                                isPolygon: widget.isPolygon,
-                              ),
-                            ],
-                          ),
-                        ],
+                                                  );
+                                                }
+                                              },
+                                              child: const Text(
+                                                'Ouvrir la page',
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text('Annuler'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                                MapActionButton(
+                                  lat: widget.lat,
+                                  lon: widget.lon,
+                                  isPolygon: widget.isPolygon,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+
+                      const SizedBox(height: 12),
 
                       Text.rich(
                         TextSpan(
@@ -513,7 +536,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF28A745),
+                                    color: AppColors.primary,
                                   ),
                                 ),
 
@@ -532,7 +555,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontStyle: FontStyle.italic,
-                                    color: Color(0xFF28A745),
+                                    color: AppColors.primary,
                                   ),
                                 ),
                             ],
@@ -662,9 +685,9 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade400),
+                              border: Border.all(color: AppColors.border),
                               borderRadius: BorderRadius.circular(6),
-                              color: Colors.grey.shade100,
+                              color: AppColors.background,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -686,7 +709,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                       TextSpan(
                                         text: datasetName,
                                         style: const TextStyle(
-                                          color: Colors.blue,
+                                          color: AppColors.info,
                                           decoration: TextDecoration.underline,
                                         ),
                                         recognizer: TapGestureRecognizer()
@@ -736,7 +759,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                       TextSpan(
                                         text: acquisitionName,
                                         style: const TextStyle(
-                                          color: Colors.blue,
+                                          color: AppColors.info,
                                           decoration: TextDecoration.underline,
                                         ),
                                         recognizer: TapGestureRecognizer()
