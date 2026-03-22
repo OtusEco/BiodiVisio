@@ -22,7 +22,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController? _serverController;
+  String _currentServer = '';
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool get _canLogin {
-    final server = _serverController?.text.trim() ?? '';
+    final server = _currentServer.trim();
     final login = _loginController.text.trim();
     final password = _passwordController.text;
 
@@ -174,10 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _loading = true);
 
-    final serverController = _serverController;
-    if (serverController == null) return;
-
-    String baseUrl = serverController.text.trim();
+    String baseUrl = _currentServer.trim();
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
@@ -321,18 +318,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             displayStringForOption: (option) => option.url,
                             onSelected: (selection) {
-                              _serverController?.text = selection.url;
+                              _currentServer = selection.url;
+                              setState(() {});
                               FocusScope.of(
                                 context,
                               ).requestFocus(_loginFocusNode);
                             },
                             fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                              _serverController ??= controller;
-
                               return TextFormField(
                                 controller: controller,
                                 focusNode: focusNode,
-                                onChanged: (_) => setState(() {}),
+                                onChanged: (value) {
+                                  _currentServer = value;
+                                  setState(() {});
+                                },
                                 decoration: InputDecoration(
                                   labelText: "Serveur GeoNature",
                                   hintText:
@@ -350,6 +349,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onPressed: () {
                                             controller.clear();
                                             setState(() {});
+                                            _currentServer = '';
                                           },
                                         )
                                       : IconButton(
