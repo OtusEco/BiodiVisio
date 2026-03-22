@@ -187,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await _apiService.login(
         apiBaseUrl: apiUrl,
         login: _loginController.text.trim(),
-        password: _passwordController.text.trim(),
+        password: _passwordController.text,
       );
 
       await _addRecentServer(baseUrl);
