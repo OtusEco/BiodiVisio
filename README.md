@@ -18,7 +18,7 @@ L'application permet aux acteurs de la biodiversité d'accéder à la connaissan
 
 | Carte des observations | Recherche taxonomique | Fiche observation |
 |-----------------------|---------------------|-----------------|
-| ![Carte des observations](https://placehold.co/260x520.png?text=Carte+des+observations) | ![Recherche taxonomique](https://placehold.co/260x520.png?text=Recherche+taxonomique) | ![Fiche observation](https://placehold.co/260x520.png?text=Fiche+observation) |
+| ![Carte des observations](./assets/screenshots/observations.png) | ![Recherche taxonomique](./assets/screenshots/recherche.png) | ![Fiche observation](./assets/screenshots/details.png) |
 
 ## 🎯 Public cible
 
