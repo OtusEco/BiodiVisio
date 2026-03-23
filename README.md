@@ -10,10 +10,6 @@ L'application permet aux acteurs de la biodiversité d'accéder à la connaissan
   <a href="https://play.google.com/store/apps/details?id=fr.otuseco.biodivisio" target="_blank">
     <img src="https://img.shields.io/badge/Google%20Play-Télécharger-green?logo=google-play&style=flat-square" alt="Télécharger sur Google Play" width="200">
   </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/OtusEco/BiodiVisio/releases" target="_blank">
-    <img src="https://img.shields.io/badge/iOS-Disponible%20en%20release-blue?logo=apple&style=flat-square" alt="Télécharger sur iOS" width="200">
-  </a>
 </p>
 
 | Carte des observations | Recherche taxonomique | Fiche observation |
@@ -57,7 +53,7 @@ Pour plus d’informations, se référer aux Conditions Générales d’Utilisat
 
 ### Core & Framework
 
-*   **Flutter (Dart) :** utilisation de la dernière version pour un rendu natif haute performance sur Android et iOS.
+*   **Flutter (Dart) :** utilisation de la dernière version pour un rendu natif haute performance sur Android.
 *   **Architecture :** découpage modulaire par services (API, Location) et UI components réutilisables.
     
 ### Cartographie
