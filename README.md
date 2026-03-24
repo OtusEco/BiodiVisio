@@ -16,6 +16,11 @@ L'application permet aux acteurs de la biodiversité d'accéder à la connaissan
 |-----------------------|---------------------|-----------------|
 | ![Carte des observations](./assets/screenshots/observations.png) | ![Recherche taxonomique](./assets/screenshots/recherche.png) | ![Fiche observation](./assets/screenshots/details.png) |
 
+## Licence
+
+Ce projet est distribué sous la **[GNU General Public License v3 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.html)**.  
+Voir le fichier [`LICENSE`](./LICENSE) pour le texte complet.
+
 ## 🎯 Public cible
 
 Cette application est spécifiquement développée pour :
