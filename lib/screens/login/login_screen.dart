@@ -251,17 +251,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 bottom: MediaQuery.of(context).viewInsets.bottom + 40,
               ),
               children: [
-                const SizedBox(height: 40),
+                SizedBox(height: isKeyboardOpen ? 10 : 40),
 
                 // Logo
                 Center(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 200,
-                    height: 100,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    width: isKeyboardOpen ? 120 : 200,
+                    height: isKeyboardOpen ? 60 : 100,
+                    child: Image.asset('assets/images/logo.png'),
                   ),
                 ),
                 // Sous-titre
+                if (!isKeyboardOpen)
                 const Center(
                   child: Text(
                     "Application de visualisation des données de GeoNature",
@@ -275,12 +278,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 60),
+                SizedBox(height: isKeyboardOpen ? 16 : 60),
 
                 Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 22,
-                    vertical: 26,
+                    vertical: isKeyboardOpen ? 16 : 26,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.card,
@@ -571,7 +574,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: isKeyboardOpen ? 8 : 20),
               ],
             ),
           ),
