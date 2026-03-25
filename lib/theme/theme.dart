@@ -20,6 +20,14 @@ class AppColors {
   static const Color error = Colors.red;
   static const Color info = Colors.blue;
 
+  // Validation
+  static const Color certain = Color(0xFF8BC34A);
+  static const Color probable = Color(0xFFCDDC39);
+  static const Color douteux = Color(0xFFFF9800);
+  static const Color invalide = Color(0xFFFF5722);
+  static const Color nonRealise = Color(0xFFBDBDBD);
+  static const Color enAttente = Color(0xFFFFFFFF);
+
   // Bordures
   static const Color border = Color(0xFFE0E0E0);
   static const Color shadow = Colors.black;

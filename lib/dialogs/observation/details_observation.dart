@@ -302,19 +302,27 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
   Color getValidationStatusColor(String? status) {
     switch (status?.toLowerCase()) {
       case "certain - très probable":
-        return AppColors.success;
-      case "en attente de validation":
+        return AppColors.certain;
       case "probable":
-        return AppColors.warning;
+        return AppColors.probable;
       case "douteux":
+        return AppColors.douteux;
       case "invalide":
-        return AppColors.error;
-      case "inconnu":
+        return AppColors.invalide;
       case "non réalisable":
-        return AppColors.textSecondary;
+      case "inconnu":
+        return AppColors.nonRealise;
+      case "en attente de validation":
+        return AppColors.enAttente;
       default:
-        return AppColors.textSecondary;
+        return AppColors.enAttente;
     }
+  }
+
+  Color getContrastTextColor(Color backgroundColor) {
+    return backgroundColor.computeLuminance() > 0.5
+        ? Colors.grey.shade800
+        : Colors.white;
   }
 
   @override
@@ -386,6 +394,8 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
               "id_nomenclature_valid_status",
             );
             final validationColor = getValidationStatusColor(validationLabel);
+            final textColor = getContrastTextColor(validationColor);
+            final isWhite = validationColor.computeLuminance() > 0.95;
 
             return FutureBuilder<Map<String, dynamic>>(
               future: _futureTaxRef,
@@ -807,13 +817,16 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: validationColor.withValues(alpha: .2),
+                                color: validationColor,
                                 borderRadius: BorderRadius.circular(8),
+                                border: isWhite
+                                    ? Border.all(color: Colors.grey.shade300)
+                                    : null,
                               ),
                               child: Text(
                                 validationLabel,
                                 style: TextStyle(
-                                  color: validationColor,
+                                  color: textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
