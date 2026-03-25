@@ -104,7 +104,7 @@ class ObservationDialog extends StatelessWidget {
                       )
                     : ListView.separated(
                         itemCount: observations.length,
-                        separatorBuilder: (_, _) =>
+                        separatorBuilder: (context, index) =>
                             const Divider(color: AppColors.border),
                         itemBuilder: (context, index) {
                           final obs = observations[index];
