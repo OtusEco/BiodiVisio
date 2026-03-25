@@ -117,11 +117,14 @@ class _MapScreenState extends State<MapScreen> {
 
     // Ajouter les markers
     allPoints.addAll(_markers.map((m) => m.point));
-
+    
     // Ajouter les sommets des polygones dans l'emprise
     for (var poly in _polygons) {
       allPoints.addAll(poly.points);
     }
+
+    // Filtrer les points invalides
+    allPoints.removeWhere((p) => !p.latitude.isFinite || !p.longitude.isFinite);
 
     if (allPoints.isEmpty) return null;
 
@@ -134,26 +137,51 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
-    double? minLat, minLng, maxLat, maxLng;
+    double minLat = allPoints.first.latitude;
+    double maxLat = allPoints.first.latitude;
+    double minLng = allPoints.first.longitude;
+    double maxLng = allPoints.first.longitude;
 
     for (var p in allPoints) {
-      if (minLat == null || p.latitude < minLat) minLat = p.latitude;
-      if (maxLat == null || p.latitude > maxLat) maxLat = p.latitude;
-      if (minLng == null || p.longitude < minLng) minLng = p.longitude;
-      if (maxLng == null || p.longitude > maxLng) maxLng = p.longitude;
+      if (!p.latitude.isFinite || !p.longitude.isFinite) continue;
+
+      if (p.latitude < minLat) minLat = p.latitude;
+      if (p.latitude > maxLat) maxLat = p.latitude;
+      if (p.longitude < minLng) minLng = p.longitude;
+      if (p.longitude > maxLng) maxLng = p.longitude;
     }
 
-    return LatLngBounds(LatLng(minLat!, minLng!), LatLng(maxLat!, maxLng!));
+    // Si les points sont au même endroit
+    if (minLat == maxLat && minLng == maxLng) {
+      return LatLngBounds(
+        LatLng(minLat - 0.01, minLng - 0.01),
+        LatLng(maxLat + 0.01, maxLng + 0.01),
+      );
+    }
+
+    return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
   }
 
-  void _fitBoundsIfNeeded() {
-    final bounds = _computeBounds();
-    if (bounds == null) return;
+void _fitBoundsIfNeeded() {
+  if (_markers.isEmpty && _polygons.isEmpty) return;
 
-    _mapController.fitCamera(
-      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(40)),
-    );
-  }
+  final bounds = _computeBounds();
+  if (bounds == null) return;
+
+// Protection contre zoom invalide
+  final latDiff = (bounds.north - bounds.south).abs();
+  final lngDiff = (bounds.east - bounds.west).abs();
+
+  if (!latDiff.isFinite || !lngDiff.isFinite) return;
+  if (latDiff == 0 && lngDiff == 0) return;
+
+  _mapController.fitCamera(
+    CameraFit.bounds(
+      bounds: bounds,
+      padding: const EdgeInsets.all(40),
+    ),
+  );
+}
 
   // Load data
 
