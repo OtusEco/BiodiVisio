@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final ApiService _apiService = ApiService();
 
   late Future<String> _appVersionFuture;
-  final String developerName = "Développé par OtusEco";
+  final String developerName = "Développé par OtusEco (GPLv3)";
 
   bool _loading = false;
   bool _obscurePassword = true;

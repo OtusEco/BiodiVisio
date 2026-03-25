@@ -8,7 +8,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
   // Récupération de PackageInfo pour avoir la version
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = packageInfo.version;
-  final String developerName = "Développé par OtusEco";
+  final String developerName = "Développé par OtusEco (GPLv3)";
 
   if (!context.mounted) return;
 
