@@ -171,21 +171,29 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
         childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
         children: medias.map<Widget>((media) {
           final path = media["media_path"];
-          if (path == null) return const SizedBox();
+          final mediaUrl = media["media_url"];
+
+          String? url;
 
           const specialServers = ["https://reensauvagerlaferme.fr/geonature"];
           final bool isSpecialServer = specialServers.contains(baseUrlClean);
 
-          final url = isSpecialServer
-              ? "$baseUrlClean/api/$path"
-              : "$baseUrlClean/api/media/attachments/$path";
+          if (path != null) {
+            url = isSpecialServer
+                ? "$baseUrlClean/api/$path"
+                : "$baseUrlClean/api/media/attachments/$path";
+          } else if (mediaUrl != null) {
+            url = mediaUrl;
+          } else {
+            return const SizedBox();
+          }
 
           final isImage =
-              path.toLowerCase().endsWith(".jpg") ||
-              path.toLowerCase().endsWith(".jpeg") ||
-              path.toLowerCase().endsWith(".png") ||
-              path.toLowerCase().endsWith(".gif") ||
-              path.toLowerCase().endsWith(".webp");
+              path != null &&
+              RegExp(
+                r"\.(jpg|jpeg|png|gif|webp)$",
+                caseSensitive: false,
+              ).hasMatch(path);
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -195,7 +203,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                 if (isImage)
                   GestureDetector(
                     onTap: () async {
-                      final uri = Uri.parse(url);
+                      final uri = Uri.parse(url!);
                       if (await canLaunchUrl(uri)) {
                         await launchUrl(uri);
                       }
@@ -203,7 +211,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
-                        url,
+                        url!,
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -220,7 +228,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                 else
                   GestureDetector(
                     onTap: () async {
-                      final uri = Uri.parse(url);
+                      final uri = Uri.parse(url!);
                       if (await canLaunchUrl(uri)) {
                         await launchUrl(uri);
                       }
@@ -233,9 +241,9 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.play_circle_outline),
+                          const Icon(Icons.launch),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(url.split("/").last)),
+                          Expanded(child: Text(url!)),
                         ],
                       ),
                     ),
