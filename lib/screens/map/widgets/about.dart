@@ -7,7 +7,7 @@ import '../../../theme/theme.dart';
 Future<void> showAboutBottomSheet(BuildContext context) async {
   // Récupération de PackageInfo pour avoir la version
   final packageInfo = await PackageInfo.fromPlatform();
-  final appVersion = "${packageInfo.version} (${packageInfo.buildNumber})";
+  final appVersion = packageInfo.version;
   final String developerName = "Développé par OtusEco";
 
   if (!context.mounted) return;

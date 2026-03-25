@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String> _getAppVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    return "${packageInfo.version} (${packageInfo.buildNumber})";
+    return packageInfo.version;
   }
 
   bool get _canLogin {
