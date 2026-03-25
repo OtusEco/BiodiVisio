@@ -70,6 +70,9 @@ class GeoJsonParser {
         case "LineString":
           _handleLineString(geometry, observations, markers);
           break;
+        case "Polygon":
+          _handlePolygon(geometry, observations, markers, polygons);
+          break;
         case "MultiPolygon":
           _handleMultiPolygon(geometry, observations, markers, polygons);
           break;
@@ -152,6 +155,60 @@ class GeoJsonParser {
         type: MarkerType.line,
       ),
     );
+  }
+
+  // POLYGON
+
+  static void _handlePolygon(
+    Map geometry,
+    List<Map<String, dynamic>> observations,
+    List<MapMarkerData> markers,
+    List<Polygon> polygons,
+  ) {
+    final coords = geometry["coordinates"];
+
+    for (var ring in coords) {
+      final points = <LatLng>[];
+
+      for (var coord in ring) {
+        final lat = coord[1].toDouble();
+        double lon = coord[0].toDouble();
+        lon = _normalizeLon(lon);
+
+        if (!_isValidLatLon(lat, lon)) continue;
+
+        points.add(LatLng(lat, lon));
+      }
+
+      if (points.isEmpty) continue;
+
+      polygons.add(
+        Polygon(
+          points: points,
+          color: Colors.red.withValues(alpha: 0.3),
+          borderColor: Colors.red,
+          borderStrokeWidth: 2,
+        ),
+      );
+
+      // Calcul du centroïde pour afficher un marker cliquable
+      final centroid = calculatePolygonCentroid(points);
+
+      // Marquer les observations comme polygone + ajout des coordonnées
+      for (var obs in observations) {
+        obs["_lat"] = centroid.latitude;
+        obs["_lon"] = centroid.longitude;
+        obs["_isPolygon"] = true;
+      }
+
+      markers.add(
+        MapMarkerData(
+          position: centroid,
+          observations: observations,
+          type: MarkerType.polygon,
+        ),
+      );
+    }
   }
 
   // MULTIPOLYGON
