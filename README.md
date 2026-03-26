@@ -7,8 +7,8 @@
 L'application permet aux acteurs de la biodiversité d'accéder à la connaissance naturaliste directement sur le terrain via leur smartphone, grâce à une interface cartographique fluide et des outils de recherche avancés.
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=fr.otuseco.biodivisio">
-    <img src="https://play.google.com/intl/fr_fr/badges/static/images/badges/fr_badge_web_generic.png" width="200">
+  <a href="https://play.google.com/store/apps/details?id=fr.otuseco.biodivisio" target="_blank">
+    <img src="https://play.google.com/intl/fr_fr/badges/static/images/badges/fr_badge_web_generic.png"  alt="Télécharger sur Google Play" width="200">
   </a>
 </p>
 
