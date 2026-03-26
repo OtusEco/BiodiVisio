@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../theme/theme.dart';
+import '../../core/theme/theme.dart';
 
 Future<void> showAboutBottomSheet(BuildContext context) async {
   // Récupération de PackageInfo pour avoir la version

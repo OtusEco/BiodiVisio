@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../services/api_service.dart';
-import '../../../theme/theme.dart';
+import '../../core/services/api_service.dart';
+import '../../core/theme/theme.dart';
 
 class LocationFilterSection extends StatelessWidget {
   final ApiService apiService;

@@ -22,8 +22,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'screens/login/login_screen.dart';
-import 'theme/theme.dart';
+import 'login/login_screen.dart';
+import 'core/theme/theme.dart';
 
 void main() {
   runApp(const BiodiVisio());

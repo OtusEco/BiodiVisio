@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/api_service.dart';
+import '../core/services/api_service.dart';
 import '../map/map_screen.dart';
-import '../../theme/theme.dart';
+import '../core/theme/theme.dart';
 
 class ServerItem {
   final String name;

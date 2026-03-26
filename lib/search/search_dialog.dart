@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../models/map_search.dart';
+import '../core/services/api_service.dart';
+import 'models/map_search.dart';
 
 import 'widgets/taxon_filter.dart';
 import 'widgets/location_filter.dart';
 import 'widgets/date_filter.dart';
-import '../../theme/theme.dart';
+import '../core/theme/theme.dart';
 
 Future<MapFilters?> showFilterDialog({
   required BuildContext context,

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../services/api_service.dart';
-import '../../../services/location_service.dart';
+import '../core/services/api_service.dart';
+import '../core/services/location_service.dart';
 
-import '../../models/map_search.dart';
-import '../../dialogs/search/search_dialog.dart';
-import '../../dialogs/observation/observation_dialog.dart';
-import '../../dialogs/observation/details_observation.dart';
+import '../search/models/map_search.dart';
+import '../search/search_dialog.dart';
+import '../observation/dialogs/observation_dialog.dart';
+import '../observation/dialogs/details_observation.dart';
 
 import 'widgets/map_app_bar.dart';
 import 'widgets/map_view.dart';
@@ -17,7 +17,7 @@ import 'widgets/about.dart';
 
 import 'utils/geometry_utils.dart';
 import '../login/login_screen.dart';
-import '../../theme/theme.dart';
+import '../core/theme/theme.dart';
 
 class MapScreen extends StatefulWidget {
   final ApiService apiService;
