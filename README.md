@@ -8,13 +8,24 @@ L'application permet aux acteurs de la biodiversité d'accéder à la connaissan
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=fr.otuseco.biodivisio" target="_blank">
-    <img src="https://img.shields.io/badge/Google%20Play-Télécharger-green?logo=google-play&style=flat-square" alt="Télécharger sur Google Play" width="200">
+    <img src="https://play.google.com/intl/fr_fr/badges/static/images/badges/fr_badge_web_generic.png"  alt="Télécharger sur Google Play" width="200">
   </a>
 </p>
 
-| Carte des observations | Recherche taxonomique | Fiche observation |
-|-----------------------|---------------------|-----------------|
-| ![Carte des observations](./assets/screenshots/observations.png) | ![Recherche taxonomique](./assets/screenshots/recherche.png) | ![Fiche observation](./assets/screenshots/details.png) |
+<div align="center">
+<table>
+  <tr>
+    <th>Carte des observations</th>
+    <th>Recherche taxonomique</th>
+    <th>Fiche observation</th>
+  </tr>
+  <tr>
+    <td><img src="./assets/screenshots/observations.png" width="300"></td>
+    <td><img src="./assets/screenshots/recherche.png" width="300"></td>
+    <td><img src="./assets/screenshots/details.png" width="300"></td>
+  </tr>
+</table>
+</div>
 
 ## Licence
 
