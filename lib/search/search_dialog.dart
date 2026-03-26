@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../core/services/api_service.dart';
-import 'models/map_search.dart';
 
-import 'widgets/taxon_filter.dart';
-import 'widgets/location_filter.dart';
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
+
+import 'models/map_search.dart';
 import 'widgets/date_filter.dart';
-import '../core/theme/theme.dart';
+import 'widgets/location_filter.dart';
+import 'widgets/taxon_filter.dart';
 
 Future<MapFilters?> showFilterDialog({
   required BuildContext context,

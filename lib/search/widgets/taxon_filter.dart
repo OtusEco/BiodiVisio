@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import '../../core/services/api_service.dart';
-import '../../core/theme/theme.dart';
+
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
 
 enum TaxonSearchType { taxon, ranks }
 

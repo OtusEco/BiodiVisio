@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:async';
 
 enum LocationErrorType {
   serviceDisabled,

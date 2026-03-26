@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/theme.dart';
+
+import 'package:biodivisio/core/theme/theme.dart';
 
 class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String subtitle;

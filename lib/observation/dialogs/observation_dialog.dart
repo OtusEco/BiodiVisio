@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../core/services/api_service.dart';
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
+
+import '../dialogs/details_observation.dart';
 import '../widgets/share_position.dart';
-import 'details_observation.dart';
-import '../../core/theme/theme.dart';
 
 class ObservationDialog extends StatelessWidget {
   final List observations;

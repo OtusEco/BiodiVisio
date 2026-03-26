@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/services/api_service.dart';
-import '../map/map_screen.dart';
-import '../core/theme/theme.dart';
+
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
+import 'package:biodivisio/map/map_screen.dart';
 
 class ServerItem {
   final String name;

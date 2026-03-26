@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../core/services/api_service.dart';
-import '../core/services/location_service.dart';
-
-import '../search/models/map_search.dart';
-import '../search/search_dialog.dart';
-import '../observation/dialogs/observation_dialog.dart';
-import '../observation/dialogs/details_observation.dart';
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/services/location_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
+import 'package:biodivisio/login/login_screen.dart';
+import 'package:biodivisio/observation/dialogs/observation_dialog.dart';
+import 'package:biodivisio/observation/dialogs/details_observation.dart';
+import 'package:biodivisio/search/models/map_search.dart';
+import 'package:biodivisio/search/search_dialog.dart';
 
 import 'widgets/map_app_bar.dart';
 import 'widgets/map_view.dart';
 import 'widgets/attribution.dart';
 import 'widgets/about.dart';
-
 import 'utils/geometry_utils.dart';
-import '../login/login_screen.dart';
-import '../core/theme/theme.dart';
+
 
 class MapScreen extends StatefulWidget {
   final ApiService apiService;

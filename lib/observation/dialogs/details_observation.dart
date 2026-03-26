@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../core/services/api_service.dart';
+
+import 'package:biodivisio/core/services/api_service.dart';
+import 'package:biodivisio/core/theme/theme.dart';
+
 import '../widgets/share_position.dart';
-import '../../core/theme/theme.dart';
 
 const Map<String, String> nomenclatureFieldLabels = {
   // Caractéristiques biologiques
