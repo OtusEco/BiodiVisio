@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:biodivisio/core/services/api_service.dart';
 import 'package:biodivisio/core/theme/theme.dart';
 
-import '../dialogs/details_observation.dart';
+import 'details_dialog.dart';
 import '../widgets/share_position.dart';
 
 class ObservationDialog extends StatelessWidget {
