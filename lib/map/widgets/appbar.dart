@@ -8,6 +8,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String currentBaseMap;
   final ValueChanged<String> onBaseMapChanged;
   final VoidCallback onUserLocation;
+  final bool isLocating;
   final VoidCallback onFilter;
   final VoidCallback onAbout;
   final VoidCallback onLogout;
@@ -19,6 +20,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.currentBaseMap,
     required this.onBaseMapChanged,
     required this.onUserLocation,
+    required this.isLocating,
     required this.onFilter,
     required this.onAbout,
     required this.onLogout,
@@ -65,9 +67,15 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
         ),
         IconButton(
-          icon: const Icon(Icons.my_location),
+          icon: isLocating
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.my_location),
           tooltip: "Afficher ma position",
-          onPressed: onUserLocation,
+          onPressed: isLocating ? null : onUserLocation,
         ),
         IconButton(
           icon: const Icon(Icons.info_outline),

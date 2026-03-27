@@ -51,6 +51,7 @@ class _MapScreenState extends State<MapScreen> {
   };
 
   double _currentZoom = 10;
+  bool _isLocating = false;
   bool _osmExpanded = false;
 
   final MapController _mapController = MapController();
@@ -381,6 +382,7 @@ class _MapScreenState extends State<MapScreen> {
   // Géolocalisation
 
   Future<void> _showUserLocation() async {
+    setState(() => _isLocating = true);
     final result = await LocationService.getUserLocation(
       onRefined: (refinedPosition) {
         if (!mounted) return;
@@ -400,7 +402,7 @@ class _MapScreenState extends State<MapScreen> {
           ];
         });
 
-        // Recentrer la carte si la position se précise beaucoup
+        // Optionnel : recentrer la carte si la position se précise beaucoup
         _mapController.move(refinedPosition, _currentZoom);
       },
       gpsError: () {
@@ -418,6 +420,8 @@ class _MapScreenState extends State<MapScreen> {
     );
 
     if (!mounted) return;
+
+    setState(() => _isLocating = false);
 
     if (!result.isSuccess) {
       String message;
@@ -477,6 +481,7 @@ class _MapScreenState extends State<MapScreen> {
           setState(() => _currentBaseMap = value);
         },
         onUserLocation: _showUserLocation,
+        isLocating: _isLocating,
         onFilter: _openFilterDialog,
         onAbout: () => showAboutBottomSheet(context),
         onLogout: _logout,
