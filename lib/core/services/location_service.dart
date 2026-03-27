@@ -23,35 +23,37 @@ class LocationResult {
 }
 
 class LocationService {
-  static Future<LocationResult> getUserLocation() async {
+  // On récupère rapidement une position puis on l'améliore en arrière-plan (GPS)
+  static Future<LocationResult> getUserLocation({
+    Function(LatLng position)? onRefined,
+    Function()? gpsError,
+  }) async {
     final permissionResult = await _checkPermissions();
-
-    if (permissionResult != null) {
-      return permissionResult;
-    }
+    if (permissionResult != null) return permissionResult;
 
     try {
-      // Position instantanée si disponible
-      final lastPosition = await Geolocator.getLastKnownPosition();
-
-      if (lastPosition != null) {
-        return LocationResult.success(
-          LatLng(lastPosition.latitude, lastPosition.longitude),
-        );
-      }
-
       // Localisation réseau
       final networkPosition = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
           timeLimit: Duration(seconds: 3),
-        ),     
+        ),
       );
 
-      return LocationResult.success(
-        LatLng(networkPosition.latitude, networkPosition.longitude),
+      final networkLatLng = LatLng(
+        networkPosition.latitude,
+        networkPosition.longitude,
       );
-    } on TimeoutException {
+
+      // Amélioration de la position en arrière plan
+      _refinePosition(
+        networkLatLng,
+        onRefined,
+        gpsError,
+      );
+
+      return LocationResult.success(networkLatLng);
+    } catch (_) {
       try {
         // Localisation GPS
         final gpsPosition = await Geolocator.getCurrentPosition(
@@ -67,11 +69,46 @@ class LocationService {
       } catch (_) {
         return const LocationResult.failure(LocationErrorType.timeout);
       }
-    } catch (_) {
-      return const LocationResult.failure(LocationErrorType.unknown);
     }
   }
 
+  // Amélioration de la position en arrière plan
+  static void _refinePosition(
+    LatLng initial,
+    Function(LatLng position)? onRefined,
+    Function()? gpsError,
+  ) async {
+    if (onRefined == null) return;
+
+    try {
+      final gpsPosition = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+
+      final refined = LatLng(
+        gpsPosition.latitude,
+        gpsPosition.longitude,
+      );
+
+      final distance = const Distance().as(
+        LengthUnit.Meter,
+        initial,
+        refined,
+      );
+
+      // Mise à jour si la nouvelle position est à >20m de l'ancienne
+      if (distance > 20 || gpsPosition.accuracy < 20) {
+        onRefined(refined);
+      }
+    } catch (_) {
+      if (gpsError != null) gpsError();
+    }
+  }
+
+  // Permissions
   static Future<LocationResult?> _checkPermissions() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
 

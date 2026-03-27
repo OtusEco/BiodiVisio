@@ -18,7 +18,6 @@ import 'widgets/appbar.dart';
 import 'widgets/attribution.dart';
 import 'widgets/view.dart';
 
-
 class MapScreen extends StatefulWidget {
   final ApiService apiService;
   final bool skipInitialLoad;
@@ -51,6 +50,7 @@ class _MapScreenState extends State<MapScreen> {
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
 
+  double _currentZoom = 10;
   bool _osmExpanded = false;
 
   final MapController _mapController = MapController();
@@ -117,7 +117,7 @@ class _MapScreenState extends State<MapScreen> {
 
     // Ajouter les markers
     allPoints.addAll(_markers.map((m) => m.point));
-    
+
     // Ajouter les sommets des polygones dans l'emprise
     for (var poly in _polygons) {
       allPoints.addAll(poly.points);
@@ -162,26 +162,26 @@ class _MapScreenState extends State<MapScreen> {
     return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
   }
 
-void _fitBoundsIfNeeded() {
-  if (_markers.isEmpty && _polygons.isEmpty) return;
+  void _fitBoundsIfNeeded() {
+    if (_markers.isEmpty && _polygons.isEmpty) return;
 
-  final bounds = _computeBounds();
-  if (bounds == null) return;
+    final bounds = _computeBounds();
+    if (bounds == null) return;
 
 // Protection contre zoom invalide
-  final latDiff = (bounds.north - bounds.south).abs();
-  final lngDiff = (bounds.east - bounds.west).abs();
+    final latDiff = (bounds.north - bounds.south).abs();
+    final lngDiff = (bounds.east - bounds.west).abs();
 
-  if (!latDiff.isFinite || !lngDiff.isFinite) return;
-  if (latDiff == 0 && lngDiff == 0) return;
+    if (!latDiff.isFinite || !lngDiff.isFinite) return;
+    if (latDiff == 0 && lngDiff == 0) return;
 
-  _mapController.fitCamera(
-    CameraFit.bounds(
-      bounds: bounds,
-      padding: const EdgeInsets.all(40),
-    ),
-  );
-}
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: bounds,
+        padding: const EdgeInsets.all(40),
+      ),
+    );
+  }
 
   // Load data
 
@@ -381,7 +381,41 @@ void _fitBoundsIfNeeded() {
   // Géolocalisation
 
   Future<void> _showUserLocation() async {
-    final result = await LocationService.getUserLocation();
+    final result = await LocationService.getUserLocation(
+      onRefined: (refinedPosition) {
+        if (!mounted) return;
+
+        setState(() {
+          _userLocationMarker = [
+            Marker(
+              width: 40,
+              height: 40,
+              point: refinedPosition,
+              child: Icon(
+                Icons.my_location,
+                color: _currentBaseMap == "OSM" ? Colors.black : Colors.white,
+                size: 35,
+              ),
+            ),
+          ];
+        });
+
+        // Recentrer la carte si la position se précise beaucoup
+        _mapController.move(refinedPosition, _currentZoom);
+      },
+      gpsError: () {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text("⚠️ Impossible d'obtenir une position GPS précise"),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+      },
+    );
 
     if (!mounted) return;
 
@@ -427,7 +461,7 @@ void _fitBoundsIfNeeded() {
       ];
     });
 
-    _mapController.move(userLatLng, 10);
+    _mapController.move(userLatLng, _currentZoom);
   }
 
   // BUILD
@@ -458,6 +492,11 @@ void _fitBoundsIfNeeded() {
                   userLocationMarker: _userLocationMarker,
                   baseMaps: _baseMaps,
                   currentBaseMap: _currentBaseMap,
+                  onZoomChanged: (zoom) {
+                    if ((zoom - _currentZoom).abs() > 0.01) {
+                      _currentZoom = zoom;
+                    }
+                  },
                   onMapReady: () {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Future.microtask(_fitBoundsIfNeeded);

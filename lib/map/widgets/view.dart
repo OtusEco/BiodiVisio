@@ -11,6 +11,7 @@ class MapView extends StatelessWidget {
   final List<Marker> userLocationMarker;
   final Map<String, String> baseMaps;
   final String currentBaseMap;
+  final Function(double zoom)? onZoomChanged;
   final VoidCallback? onMapReady;
 
   const MapView({
@@ -21,6 +22,7 @@ class MapView extends StatelessWidget {
     required this.userLocationMarker,
     required this.baseMaps,
     required this.currentBaseMap,
+    this.onZoomChanged,
     this.onMapReady,
   });
 
@@ -34,6 +36,9 @@ class MapView extends StatelessWidget {
         interactionOptions: const InteractionOptions(
           flags: ~InteractiveFlag.rotate,
         ),
+        onPositionChanged: (position, hasGesture) {
+          onZoomChanged?.call(position.zoom);
+        },
         onMapReady: () {
           onMapReady?.call();
         },
