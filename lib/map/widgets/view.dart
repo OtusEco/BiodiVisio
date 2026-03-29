@@ -46,7 +46,7 @@ class MapView extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: baseMaps[currentBaseMap]!,
-          userAgentPackageName: 'fr.otuseco.biodivisio/1.0.0',
+          userAgentPackageName: 'fr.otuseco.biodivisio/1.0.2',
         ),
 
         MarkerLayer(markers: userLocationMarker),
