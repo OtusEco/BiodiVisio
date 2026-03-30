@@ -19,6 +19,8 @@ class MapAttribution extends StatelessWidget {
     "OSM": "© les contributeurs d'OpenStreetMap",
     "Satellite":
         "© Esri - Source : Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+    "Plan IGN": "© IGN",
+    "Ortho IGN": "© IGN",
   };
 
   String get attributionText =>
