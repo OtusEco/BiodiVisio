@@ -63,15 +63,23 @@ class _LoginScreenState extends State<LoginScreen> {
     ServerItem(name: "La SHF", url: "https://geonature.lashf.org"),
     ServerItem(name: "Lo Parvi", url: "https://geonature.loparvi.fr"),
     ServerItem(
-      name: "Parc National de forêts",
+      name: "Parc national des Ecrins",
+      url: "https://geonature.ecrins-parcnational.fr",
+    ),
+    ServerItem(
+      name: "Parc national des Cévennes",
+      url: "https://appli.cevennes-parcnational.net/geonature",
+    ),
+    ServerItem(
+      name: "Parc national de forêts",
       url: "https://geonature.forets-parcnational.fr/geonature",
     ),
     ServerItem(
-      name: "PN amazonien de Guyane",
+      name: "Parc amazonien de Guyane",
       url: "https://geonature.parc-amazonien-guyane.fr/geonature",
     ),
     ServerItem(
-      name: "PN des Pyrénées",
+      name: "Parc national des Pyrénées",
       url: "https://geonature.pyrenees-parcnational.fr/geonature",
     ),
     ServerItem(
@@ -91,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
       url: "https://geonature.cbn-alpin.fr",
     ),
     ServerItem(name: "Silene", url: "https://expert.silene.eu"),
+    ServerItem(name: "Démo GeoNature", url: "https://demo.geonature.fr/geonature"),
   ];
 
   List<ServerItem> get _serverSuggestions {
