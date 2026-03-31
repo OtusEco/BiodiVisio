@@ -402,7 +402,7 @@ class _MapScreenState extends State<MapScreen> {
               point: refinedPosition,
               child: Icon(
                 Icons.my_location,
-                color: _currentBaseMap == "OSM" ? Colors.black : Colors.white,
+                color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
                 size: 35,
               ),
             ),
@@ -464,7 +464,7 @@ class _MapScreenState extends State<MapScreen> {
           point: userLatLng,
           child: Icon(
             Icons.my_location,
-            color: _currentBaseMap == "OSM" ? Colors.black : Colors.white,
+            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
             size: 35,
           ),
         ),
