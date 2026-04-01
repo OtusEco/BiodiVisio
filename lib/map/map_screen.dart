@@ -96,6 +96,11 @@ class _MapScreenState extends State<MapScreen> {
       parts.add("Groupe 2 - INPN ($count)");
     }
 
+    if (_filters.selectedGroup3.isNotEmpty) {
+      final count = _filters.selectedGroup3.length;
+      parts.add("Groupe 3 - INPN ($count)");
+    }
+
     // Dates
     if (_filters.dateMin != null || _filters.dateMax != null) {
       String format(DateTime? d) {

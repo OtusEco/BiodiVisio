@@ -4,6 +4,7 @@ class MapFilters {
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
   final List<String> selectedGroup2;
+  final List<String> selectedGroup3;
   final List<int> selectedAreaComIds;
   final List<String> selectedAreaComNames;
   final List<int> selectedAreaDepIds;
@@ -16,6 +17,7 @@ class MapFilters {
     this.selectedCdRefs = const [],
     this.selectedTaxonLabels = const [],
     this.selectedGroup2 = const [],
+    this.selectedGroup3 = const [],
     this.selectedAreaComIds = const [],
     this.selectedAreaComNames = const [],
     this.selectedAreaDepIds = const [],
@@ -48,6 +50,11 @@ class MapFilters {
       // Groupe 2
       if (selectedGroup2.isNotEmpty) {
         filters["taxonomy_group2_inpn"] = selectedGroup2;
+      }
+
+      // Groupe 3
+      if (selectedGroup3.isNotEmpty) {
+        filters["taxonomy_group3_inpn"] = selectedGroup3;
       }
 
       // Localisation
@@ -86,6 +93,7 @@ class MapFilters {
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
       selectedGroup2.isEmpty &&
+      selectedGroup3.isEmpty &&
       selectedAreaComIds.isEmpty &&
       selectedAreaDepIds.isEmpty &&
       dateMin == null &&

@@ -20,6 +20,7 @@ Future<MapFilters?> showFilterDialog({
   );
 
   final selectedGroup2 = List<String>.from(currentFilters.selectedGroup2);
+  final selectedGroup3 = List<String>.from(currentFilters.selectedGroup3);
 
   // Où ?
   final selectedAreaComIds = List<int>.from(currentFilters.selectedAreaComIds);
@@ -77,6 +78,7 @@ Future<MapFilters?> showFilterDialog({
                             selectedCdRefs: selectedCdRefs,
                             selectedTaxonLabels: selectedTaxonLabels,
                             selectedGroup2: selectedGroup2,
+                            selectedGroup3: selectedGroup3,
                           ),
 
                           const SizedBox(height: 15),
@@ -139,6 +141,7 @@ Future<MapFilters?> showFilterDialog({
                                 selectedCdRefs.clear();
                                 selectedTaxonLabels.clear();
                                 selectedGroup2.clear();
+                                selectedGroup3.clear();
                                 selectedAreaComIds.clear();
                                 selectedAreaComNames.clear();
                                 selectedAreaDepIds.clear();
@@ -171,6 +174,7 @@ Future<MapFilters?> showFilterDialog({
                                       selectedCdRefs: selectedCdRefs,
                                       selectedTaxonLabels: selectedTaxonLabels,
                                       selectedGroup2: selectedGroup2,
+                                      selectedGroup3: selectedGroup3,
                                       selectedAreaComIds: selectedAreaComIds,
                                       selectedAreaComNames:
                                           selectedAreaComNames,

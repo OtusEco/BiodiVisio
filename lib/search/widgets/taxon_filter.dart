@@ -7,13 +7,14 @@ import 'package:biodivisio/core/theme/theme.dart';
 
 import '../data/data.dart';
 
-enum TaxonSearchType { taxon, ranks, group2 }
+enum TaxonSearchType { taxon, ranks, group2, group3 }
 
 class TaxonFilterSection extends StatefulWidget {
   final ApiService apiService;
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
   final List<String> selectedGroup2;
+  final List<String> selectedGroup3;
 
   const TaxonFilterSection({
     super.key,
@@ -21,6 +22,7 @@ class TaxonFilterSection extends StatefulWidget {
     required this.selectedCdRefs,
     required this.selectedTaxonLabels,
     required this.selectedGroup2,
+    required this.selectedGroup3,
   });
 
   @override
@@ -34,11 +36,13 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
   TaxonSearchType searchType = TaxonSearchType.taxon;
 
   List<String> group2Filtered = [];
+  List<String> group3Filtered = [];
 
   @override
   void initState() {
     super.initState();
     group2Filtered = List.from(group2Options);
+    group3Filtered = List.from(group3Options);
   }
 
   String get fieldHint {
@@ -75,8 +79,12 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
 
   @override
   Widget build(BuildContext context) {
-    final canSelectTaxonOrRank = widget.selectedGroup2.isEmpty;
-    final canSelectGroup2 = widget.selectedTaxonLabels.isEmpty;
+    final canSelectTaxonOrRank =
+        widget.selectedGroup2.isEmpty && widget.selectedGroup3.isEmpty;
+    final canSelectGroup2 =
+        widget.selectedTaxonLabels.isEmpty && widget.selectedGroup3.isEmpty;
+    final canSelectGroup3 =
+        widget.selectedTaxonLabels.isEmpty && widget.selectedGroup2.isEmpty;
 
     return _buildCard(
       title: "Quoi ?",
@@ -121,13 +129,26 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 ),
               ),
             ),
+            DropdownMenuItem(
+              value: TaxonSearchType.group3,
+              enabled: canSelectGroup3,
+              child: Text(
+                "Groupe 3 - INPN",
+                style: TextStyle(
+                  color: canSelectGroup3 ? Colors.black : Colors.grey,
+                ),
+              ),
+            ),
           ],
           onChanged: (value) {
             if ((value == TaxonSearchType.group2 &&
                     widget.selectedTaxonLabels.isNotEmpty) ||
+                (value == TaxonSearchType.group3 &&
+                    widget.selectedTaxonLabels.isNotEmpty) ||
                 ((value == TaxonSearchType.taxon ||
                         value == TaxonSearchType.ranks) &&
-                    widget.selectedGroup2.isNotEmpty)) {
+                    (widget.selectedGroup2.isNotEmpty ||
+                        widget.selectedGroup3.isNotEmpty))) {
               return;
             }
 
@@ -136,6 +157,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 searchType = value;
                 suggestions = [];
                 group2Filtered = List.from(group2Options);
+                group3Filtered = List.from(group3Options);
               });
             }
           },
@@ -192,7 +214,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               },
             );
           }),
-        ] else ...[
+        ] else if (searchType == TaxonSearchType.group2) ...[
           // Groupe 2
           TextField(
             decoration: InputDecoration(
@@ -245,6 +267,58 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               ),
             ),
           ),
+        ] else if (searchType == TaxonSearchType.group3) ...[
+          TextField(
+            decoration: InputDecoration(
+              hintText: "Rechercher un groupe",
+              border: const OutlineInputBorder(),
+              isDense: true,
+              prefixIcon: const Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              setState(() {
+                group3Filtered = group3Options
+                    .where((g) => g.toLowerCase().contains(value.toLowerCase()))
+                    .toList();
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: group3Filtered.length,
+                itemBuilder: (context, index) {
+                  final group = group3Filtered[index];
+                  final isSelected = widget.selectedGroup3.contains(group);
+
+                  return ListTile(
+                    dense: true,
+                    title: Text(group),
+                    trailing: isSelected
+                        ? const Icon(Icons.check_circle,
+                            color: AppColors.primary)
+                        : const Icon(Icons.circle_outlined),
+                    onTap: () {
+                      setState(() {
+                        if (isSelected) {
+                          widget.selectedGroup3.remove(group);
+                        } else {
+                          widget.selectedGroup3.add(group);
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
         ],
 
         // Elements sélectionnés
@@ -278,6 +352,23 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 onDeleted: () {
                   setState(() {
                     widget.selectedGroup2.remove(group);
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
+        if (widget.selectedGroup3.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            children: widget.selectedGroup3.map((group) {
+              return Chip(
+                label: Text("Groupe 3 : $group"),
+                onDeleted: () {
+                  setState(() {
+                    widget.selectedGroup3.remove(group);
                   });
                 },
               );
