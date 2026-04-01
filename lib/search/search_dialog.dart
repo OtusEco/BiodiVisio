@@ -13,28 +13,31 @@ Future<MapFilters?> showFilterDialog({
   required ApiService apiService,
   required MapFilters currentFilters,
 }) async {
+  // Quoi ?
+  final selectedCdRefs = List<int>.from(currentFilters.selectedCdRefs);
+  final selectedTaxonLabels = List<Map<String, dynamic>>.from(
+    currentFilters.selectedTaxonLabels,
+  );
+
+  final selectedGroup2 = List<String>.from(currentFilters.selectedGroup2);
+
+  // Où ?
+  final selectedAreaComIds = List<int>.from(currentFilters.selectedAreaComIds);
+  final selectedAreaComNames = List<String>.from(
+    currentFilters.selectedAreaComNames,
+  );
+  final selectedAreaDepIds = List<int>.from(currentFilters.selectedAreaDepIds);
+  final selectedAreaDepNames = List<String>.from(
+    currentFilters.selectedAreaDepNames,
+  );
+
+  // Quand ?
   DateFilterMode dateMode = currentFilters.dateMode == DateMode.period
       ? DateFilterMode.period
       : DateFilterMode.betweenDates;
 
   DateTime? selectedDateMin = currentFilters.dateMin;
   DateTime? selectedDateMax = currentFilters.dateMax;
-
-  // selectedTaxonLabels = List<Map<String,dynamic>>
-  final selectedCdRefs = List<int>.from(currentFilters.selectedCdRefs);
-  final selectedTaxonLabels = List<Map<String, dynamic>>.from(
-    currentFilters.selectedTaxonLabels,
-  );
-
-  final selectedAreaComIds = List<int>.from(currentFilters.selectedAreaComIds);
-  final selectedAreaComNames = List<String>.from(
-    currentFilters.selectedAreaComNames,
-  );
-
-  final selectedAreaDepIds = List<int>.from(currentFilters.selectedAreaDepIds);
-  final selectedAreaDepNames = List<String>.from(
-    currentFilters.selectedAreaDepNames,
-  );
 
   return showModalBottomSheet<MapFilters>(
     context: context,
@@ -73,6 +76,7 @@ Future<MapFilters?> showFilterDialog({
                             apiService: apiService,
                             selectedCdRefs: selectedCdRefs,
                             selectedTaxonLabels: selectedTaxonLabels,
+                            selectedGroup2: selectedGroup2,
                           ),
 
                           const SizedBox(height: 15),
@@ -134,6 +138,7 @@ Future<MapFilters?> showFilterDialog({
                               setStateDialog(() {
                                 selectedCdRefs.clear();
                                 selectedTaxonLabels.clear();
+                                selectedGroup2.clear();
                                 selectedAreaComIds.clear();
                                 selectedAreaComNames.clear();
                                 selectedAreaDepIds.clear();
@@ -151,7 +156,6 @@ Future<MapFilters?> showFilterDialog({
                               ),
                             ),
                           ),
-
                           Row(
                             children: [
                               TextButton(
@@ -166,6 +170,7 @@ Future<MapFilters?> showFilterDialog({
                                     MapFilters(
                                       selectedCdRefs: selectedCdRefs,
                                       selectedTaxonLabels: selectedTaxonLabels,
+                                      selectedGroup2: selectedGroup2,
                                       selectedAreaComIds: selectedAreaComIds,
                                       selectedAreaComNames:
                                           selectedAreaComNames,
@@ -176,8 +181,8 @@ Future<MapFilters?> showFilterDialog({
                                       dateMax: selectedDateMax,
                                       dateMode:
                                           dateMode == DateFilterMode.period
-                                          ? DateMode.period
-                                          : DateMode.betweenDates,
+                                              ? DateMode.period
+                                              : DateMode.betweenDates,
                                     ),
                                   );
                                 },

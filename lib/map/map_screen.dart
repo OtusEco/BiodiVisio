@@ -48,9 +48,9 @@ class _MapScreenState extends State<MapScreen> {
     "OSM": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "Satellite":
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    "Plan IGN": 
+    "Plan IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png&STYLE=normal",
-    "Ortho IGN": 
+    "Ortho IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg&STYLE=normal",
   };
 
@@ -89,6 +89,11 @@ class _MapScreenState extends State<MapScreen> {
       }).toList();
 
       parts.add(cleaned.join(", "));
+    }
+
+    if (_filters.selectedGroup2.isNotEmpty) {
+      final count = _filters.selectedGroup2.length;
+      parts.add("Groupe 2 - INPN ($count)");
     }
 
     // Dates
@@ -402,7 +407,10 @@ class _MapScreenState extends State<MapScreen> {
               point: refinedPosition,
               child: Icon(
                 Icons.my_location,
-                color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
+                color:
+                    (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
+                        ? Colors.black
+                        : Colors.white,
                 size: 35,
               ),
             ),
@@ -464,7 +472,9 @@ class _MapScreenState extends State<MapScreen> {
           point: userLatLng,
           child: Icon(
             Icons.my_location,
-            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
+            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
+                ? Colors.black
+                : Colors.white,
             size: 35,
           ),
         ),

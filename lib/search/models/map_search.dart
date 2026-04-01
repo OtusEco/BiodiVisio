@@ -3,6 +3,7 @@ enum DateMode { betweenDates, period }
 class MapFilters {
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
+  final List<String> selectedGroup2;
   final List<int> selectedAreaComIds;
   final List<String> selectedAreaComNames;
   final List<int> selectedAreaDepIds;
@@ -14,6 +15,7 @@ class MapFilters {
   const MapFilters({
     this.selectedCdRefs = const [],
     this.selectedTaxonLabels = const [],
+    this.selectedGroup2 = const [],
     this.selectedAreaComIds = const [],
     this.selectedAreaComNames = const [],
     this.selectedAreaDepIds = const [],
@@ -27,29 +29,36 @@ class MapFilters {
     final Map<String, dynamic> filters = {};
 
     if (!isFirstLoad) {
-      if (selectedCdRefs.isNotEmpty) {
-        filters["cd_ref"] = selectedCdRefs;
+      // Taxons
+      final cdRefs = selectedTaxonLabels
+          .where((t) => t["isRank"] != true)
+          .map((t) => t["cd_ref"])
+          .toList();
+      if (cdRefs.isNotEmpty) filters["cd_ref"] = cdRefs;
+
+      // Rangs
+      final cdRefParents = selectedTaxonLabels
+          .where((t) => t["isRank"] == true)
+          .map((t) => t["cd_ref"])
+          .toList();
+      if (cdRefParents.isNotEmpty) {
+        filters["cd_ref_parent"] = cdRefParents;
       }
 
-      if (selectedTaxonLabels.isNotEmpty) {
-        final cdRefParents = selectedTaxonLabels
-            .where((taxon) => taxon["nom_rang"] != null)
-            .map((taxon) => taxon["cd_ref"])
-            .toList();
-
-        if (cdRefParents.isNotEmpty) {
-          filters["cd_ref_parent"] = cdRefParents;
-        }
+      // Groupe 2
+      if (selectedGroup2.isNotEmpty) {
+        filters["taxonomy_group2_inpn"] = selectedGroup2;
       }
 
+      // Localisation
       if (selectedAreaComIds.isNotEmpty) {
         filters["area_COM"] = selectedAreaComIds;
       }
-
       if (selectedAreaDepIds.isNotEmpty) {
         filters["area_DEP"] = selectedAreaDepIds;
       }
 
+      // Dates
       if (dateMode == DateMode.period) {
         if (dateMin != null && dateMax != null) {
           filters["period_start"] =
@@ -76,6 +85,7 @@ class MapFilters {
   bool get isEmpty =>
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
+      selectedGroup2.isEmpty &&
       selectedAreaComIds.isEmpty &&
       selectedAreaDepIds.isEmpty &&
       dateMin == null &&
