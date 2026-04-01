@@ -3,6 +3,7 @@ enum DateMode { betweenDates, period }
 class MapFilters {
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
+  final List<String> selectedHabitat;
   final List<String> selectedGroup2;
   final List<String> selectedGroup3;
   final List<int> selectedAreaComIds;
@@ -16,6 +17,7 @@ class MapFilters {
   const MapFilters({
     this.selectedCdRefs = const [],
     this.selectedTaxonLabels = const [],
+    this.selectedHabitat = const [],
     this.selectedGroup2 = const [],
     this.selectedGroup3 = const [],
     this.selectedAreaComIds = const [],
@@ -45,6 +47,12 @@ class MapFilters {
           .toList();
       if (cdRefParents.isNotEmpty) {
         filters["cd_ref_parent"] = cdRefParents;
+      }
+
+      // Habitat
+      if (selectedHabitat.isNotEmpty) {
+        filters["taxonomy_id_hab"] =
+            selectedHabitat.map((e) => int.parse(e)).toList();
       }
 
       // Groupe 2
@@ -92,6 +100,7 @@ class MapFilters {
   bool get isEmpty =>
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
+      selectedHabitat.isEmpty &&
       selectedGroup2.isEmpty &&
       selectedGroup3.isEmpty &&
       selectedAreaComIds.isEmpty &&

@@ -91,6 +91,11 @@ class _MapScreenState extends State<MapScreen> {
       parts.add(cleaned.join(", "));
     }
 
+    if (_filters.selectedHabitat.isNotEmpty) {
+      final count = _filters.selectedHabitat.length;
+      parts.add("Habitat ($count)");
+    }
+
     if (_filters.selectedGroup2.isNotEmpty) {
       final count = _filters.selectedGroup2.length;
       parts.add("Groupe 2 - INPN ($count)");

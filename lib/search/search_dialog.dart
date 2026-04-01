@@ -19,6 +19,7 @@ Future<MapFilters?> showFilterDialog({
     currentFilters.selectedTaxonLabels,
   );
 
+  final selectedHabitat = List<String>.from(currentFilters.selectedHabitat);
   final selectedGroup2 = List<String>.from(currentFilters.selectedGroup2);
   final selectedGroup3 = List<String>.from(currentFilters.selectedGroup3);
 
@@ -77,6 +78,7 @@ Future<MapFilters?> showFilterDialog({
                             apiService: apiService,
                             selectedCdRefs: selectedCdRefs,
                             selectedTaxonLabels: selectedTaxonLabels,
+                            selectedHabitat: selectedHabitat,
                             selectedGroup2: selectedGroup2,
                             selectedGroup3: selectedGroup3,
                           ),
@@ -140,6 +142,7 @@ Future<MapFilters?> showFilterDialog({
                               setStateDialog(() {
                                 selectedCdRefs.clear();
                                 selectedTaxonLabels.clear();
+                                selectedHabitat.clear();
                                 selectedGroup2.clear();
                                 selectedGroup3.clear();
                                 selectedAreaComIds.clear();
@@ -173,6 +176,7 @@ Future<MapFilters?> showFilterDialog({
                                     MapFilters(
                                       selectedCdRefs: selectedCdRefs,
                                       selectedTaxonLabels: selectedTaxonLabels,
+                                      selectedHabitat: selectedHabitat,
                                       selectedGroup2: selectedGroup2,
                                       selectedGroup3: selectedGroup3,
                                       selectedAreaComIds: selectedAreaComIds,

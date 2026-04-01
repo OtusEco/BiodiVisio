@@ -8,6 +8,18 @@ class FilterOption<T> {
   });
 }
 
+// Habitat
+final List<FilterOption<String>> habitatOptions = [
+  FilterOption(label: "Marin", value: "1"),
+  FilterOption(label: "Eau douce", value: "2"),
+  FilterOption(label: "Terrestre", value: "3"),
+  FilterOption(label: "Marin et eau douce", value: "4"),
+  FilterOption(label: "Marin et terrestre", value: "5"),
+  FilterOption(label: "Eau saumâtre", value: "6"),
+  FilterOption(label: "Continental (terrestre et/ou eau douce)", value: "7"),
+  FilterOption(label: "Continental (terrestre et eau douce)", value: "8"),
+];
+
 // Groupe 2
 final List<FilterOption<String>> group2Options = [
   FilterOption(label: "Acanthocéphales", value: "Acanthocéphales"),

@@ -7,12 +7,13 @@ import 'package:biodivisio/core/theme/theme.dart';
 
 import '../data/data.dart';
 
-enum TaxonSearchType { taxon, ranks, group2, group3 }
+enum TaxonSearchType { taxon, ranks, habitat, group2, group3 }
 
 class TaxonFilterSection extends StatefulWidget {
   final ApiService apiService;
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
+  final List<String> selectedHabitat;
   final List<String> selectedGroup2;
   final List<String> selectedGroup3;
 
@@ -21,6 +22,7 @@ class TaxonFilterSection extends StatefulWidget {
     required this.apiService,
     required this.selectedCdRefs,
     required this.selectedTaxonLabels,
+    required this.selectedHabitat,
     required this.selectedGroup2,
     required this.selectedGroup3,
   });
@@ -35,12 +37,14 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
   Timer? _debounce;
   TaxonSearchType searchType = TaxonSearchType.taxon;
 
+  List<FilterOption<String>> habitatFiltered = [];
   List<FilterOption<String>> group2Filtered = [];
   List<FilterOption<String>> group3Filtered = [];
 
   @override
   void initState() {
     super.initState();
+    habitatFiltered = List.from(habitatOptions);
     group2Filtered = List.from(group2Options);
     group3Filtered = List.from(group3Options);
   }
@@ -79,12 +83,18 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
 
   @override
   Widget build(BuildContext context) {
-    final canSelectTaxonOrRank =
-        widget.selectedGroup2.isEmpty && widget.selectedGroup3.isEmpty;
-    final canSelectGroup2 =
-        widget.selectedTaxonLabels.isEmpty && widget.selectedGroup3.isEmpty;
-    final canSelectGroup3 =
-        widget.selectedTaxonLabels.isEmpty && widget.selectedGroup2.isEmpty;
+    final canSelectTaxonOrRank = widget.selectedHabitat.isEmpty &&
+        widget.selectedGroup2.isEmpty &&
+        widget.selectedGroup3.isEmpty;
+    final canSelectHabitat = widget.selectedTaxonLabels.isEmpty &&
+        widget.selectedGroup2.isEmpty &&
+        widget.selectedGroup3.isEmpty;
+    final canSelectGroup2 = widget.selectedTaxonLabels.isEmpty &&
+        widget.selectedHabitat.isEmpty &&
+        widget.selectedGroup3.isEmpty;
+    final canSelectGroup3 = widget.selectedTaxonLabels.isEmpty &&
+        widget.selectedHabitat.isEmpty &&
+        widget.selectedGroup2.isEmpty;
 
     return _buildCard(
       title: "Quoi ?",
@@ -120,6 +130,16 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               ),
             ),
             DropdownMenuItem(
+              value: TaxonSearchType.habitat,
+              enabled: canSelectHabitat,
+              child: Text(
+                "Habitat",
+                style: TextStyle(
+                  color: canSelectHabitat ? Colors.black : Colors.grey,
+                ),
+              ),
+            ),
+            DropdownMenuItem(
               value: TaxonSearchType.group2,
               enabled: canSelectGroup2,
               child: Text(
@@ -141,13 +161,18 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             ),
           ],
           onChanged: (value) {
-            if ((value == TaxonSearchType.group2 &&
+            if ((value == TaxonSearchType.habitat &&
+                    (widget.selectedGroup2.isNotEmpty ||
+                        widget.selectedGroup3.isNotEmpty ||
+                        widget.selectedTaxonLabels.isNotEmpty)) ||
+                (value == TaxonSearchType.group2 &&
                     widget.selectedTaxonLabels.isNotEmpty) ||
                 (value == TaxonSearchType.group3 &&
                     widget.selectedTaxonLabels.isNotEmpty) ||
                 ((value == TaxonSearchType.taxon ||
                         value == TaxonSearchType.ranks) &&
-                    (widget.selectedGroup2.isNotEmpty ||
+                    (widget.selectedHabitat.isNotEmpty ||
+                        widget.selectedGroup2.isNotEmpty ||
                         widget.selectedGroup3.isNotEmpty))) {
               return;
             }
@@ -156,6 +181,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               setState(() {
                 searchType = value;
                 suggestions = [];
+                habitatFiltered = List.from(habitatOptions);
                 group2Filtered = List.from(group2Options);
                 group3Filtered = List.from(group3Options);
               });
@@ -214,6 +240,61 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               },
             );
           }),
+        ] else if (searchType == TaxonSearchType.habitat) ...[
+          // Habitat
+          TextField(
+            decoration: InputDecoration(
+              hintText: "Rechercher un habitat",
+              border: const OutlineInputBorder(),
+              isDense: true,
+              prefixIcon: const Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              setState(() {
+                habitatFiltered = habitatOptions
+                    .where((h) =>
+                        h.label.toLowerCase().contains(value.toLowerCase()))
+                    .toList();
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: habitatFiltered.length,
+                itemBuilder: (context, index) {
+                  final habitat = habitatFiltered[index];
+                  final isSelected =
+                      widget.selectedHabitat.contains(habitat.value);
+
+                  return ListTile(
+                    dense: true,
+                    title: Text(habitat.label),
+                    trailing: isSelected
+                        ? const Icon(Icons.check_circle,
+                            color: AppColors.primary)
+                        : const Icon(Icons.circle_outlined),
+                    onTap: () {
+                      setState(() {
+                        if (isSelected) {
+                          widget.selectedHabitat.remove(habitat.value);
+                        } else {
+                          widget.selectedHabitat.add(habitat.value);
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
         ] else if (searchType == TaxonSearchType.group2) ...[
           // Groupe 2
           TextField(
@@ -270,6 +351,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             ),
           ),
         ] else if (searchType == TaxonSearchType.group3) ...[
+          // Groupe 3
           TextField(
             decoration: InputDecoration(
               hintText: "Rechercher un groupe",
@@ -345,6 +427,29 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             );
           }).toList(),
         ),
+        if (widget.selectedHabitat.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            children: widget.selectedHabitat.map((habitatValue) {
+              final option = habitatOptions.firstWhere(
+                (h) => h.value == habitatValue,
+                orElse: () =>
+                    FilterOption(label: "Inconnu", value: habitatValue),
+              );
+
+              return Chip(
+                label: Text("Habitat : ${option.label}"),
+                onDeleted: () {
+                  setState(() {
+                    widget.selectedHabitat.remove(habitatValue);
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
         if (widget.selectedGroup2.isNotEmpty) ...[
           const SizedBox(height: 10),
           Wrap(
