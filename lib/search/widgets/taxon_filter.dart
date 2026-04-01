@@ -35,8 +35,8 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
   Timer? _debounce;
   TaxonSearchType searchType = TaxonSearchType.taxon;
 
-  List<String> group2Filtered = [];
-  List<String> group3Filtered = [];
+  List<FilterOption<String>> group2Filtered = [];
+  List<FilterOption<String>> group3Filtered = [];
 
   @override
   void initState() {
@@ -226,7 +226,8 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             onChanged: (value) {
               setState(() {
                 group2Filtered = group2Options
-                    .where((g) => g.toLowerCase().contains(value.toLowerCase()))
+                    .where((g) =>
+                        g.label.toLowerCase().contains(value.toLowerCase()))
                     .toList();
               });
             },
@@ -244,11 +245,12 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 itemCount: group2Filtered.length,
                 itemBuilder: (context, index) {
                   final group = group2Filtered[index];
-                  final isSelected = widget.selectedGroup2.contains(group);
+                  final isSelected =
+                      widget.selectedGroup2.contains(group.value);
 
                   return ListTile(
                     dense: true,
-                    title: Text(group),
+                    title: Text(group.label),
                     trailing: isSelected
                         ? const Icon(Icons.check_circle,
                             color: AppColors.primary)
@@ -256,9 +258,9 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                     onTap: () {
                       setState(() {
                         if (isSelected) {
-                          widget.selectedGroup2.remove(group);
+                          widget.selectedGroup2.remove(group.value);
                         } else {
-                          widget.selectedGroup2.add(group);
+                          widget.selectedGroup2.add(group.value);
                         }
                       });
                     },
@@ -278,7 +280,8 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             onChanged: (value) {
               setState(() {
                 group3Filtered = group3Options
-                    .where((g) => g.toLowerCase().contains(value.toLowerCase()))
+                    .where((g) =>
+                        g.label.toLowerCase().contains(value.toLowerCase()))
                     .toList();
               });
             },
@@ -296,11 +299,12 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 itemCount: group3Filtered.length,
                 itemBuilder: (context, index) {
                   final group = group3Filtered[index];
-                  final isSelected = widget.selectedGroup3.contains(group);
+                  final isSelected =
+                      widget.selectedGroup3.contains(group.value);
 
                   return ListTile(
                     dense: true,
-                    title: Text(group),
+                    title: Text(group.label),
                     trailing: isSelected
                         ? const Icon(Icons.check_circle,
                             color: AppColors.primary)
@@ -308,9 +312,9 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                     onTap: () {
                       setState(() {
                         if (isSelected) {
-                          widget.selectedGroup3.remove(group);
+                          widget.selectedGroup3.remove(group.value);
                         } else {
-                          widget.selectedGroup3.add(group);
+                          widget.selectedGroup3.add(group.value);
                         }
                       });
                     },
