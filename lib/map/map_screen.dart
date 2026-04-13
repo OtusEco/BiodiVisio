@@ -72,7 +72,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   // Sous titre
-
   String get _subtitle {
     if (_filters.isEmpty) {
       return widget.skipInitialLoad
@@ -91,20 +90,21 @@ class _MapScreenState extends State<MapScreen> {
       parts.add(cleaned.join(", "));
     }
 
-    if (_filters.selectedHabitat.isNotEmpty) {
-      final count = _filters.selectedHabitat.length;
-      parts.add("Habitat ($count)");
-    }
+    final filterMap = {
+      "Protection": _filters.selectedProtection,
+      "Réglementation": _filters.selectedRegulation,
+      "Liste rouge mondiale": _filters.selectedWorldwide,
+      "Liste rouge européenne": _filters.selectedEuropean,
+      "Liste rouge nationale": _filters.selectedNational,
+      "Liste rouge régionale": _filters.selectedRegional,
+      "Habitat": _filters.selectedHabitat,
+      "Groupe 2 - INPN": _filters.selectedGroup2,
+      "Groupe 3 - INPN": _filters.selectedGroup3,
+    };
 
-    if (_filters.selectedGroup2.isNotEmpty) {
-      final count = _filters.selectedGroup2.length;
-      parts.add("Groupe 2 - INPN ($count)");
-    }
-
-    if (_filters.selectedGroup3.isNotEmpty) {
-      final count = _filters.selectedGroup3.length;
-      parts.add("Groupe 3 - INPN ($count)");
-    }
+    filterMap.forEach((label, list) {
+      if (list.isNotEmpty) parts.add("$label (${list.length})");
+    });
 
     // Dates
     if (_filters.dateMin != null || _filters.dateMax != null) {

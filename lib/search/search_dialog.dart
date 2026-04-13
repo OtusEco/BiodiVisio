@@ -15,29 +15,32 @@ Future<MapFilters?> showFilterDialog({
 }) async {
   // Quoi ?
   final selectedCdRefs = List<int>.from(currentFilters.selectedCdRefs);
-  final selectedTaxonLabels = List<Map<String, dynamic>>.from(
-    currentFilters.selectedTaxonLabels,
-  );
-
+  final selectedTaxonLabels =
+      List<Map<String, dynamic>>.from(currentFilters.selectedTaxonLabels);
+  final selectedProtection =
+      List<String>.from(currentFilters.selectedProtection);
+  final selectedRegulation =
+      List<String>.from(currentFilters.selectedRegulation);
+  final selectedWorldwide = List<String>.from(currentFilters.selectedWorldwide);
+  final selectedEuropean = List<String>.from(currentFilters.selectedEuropean);
+  final selectedNational = List<String>.from(currentFilters.selectedNational);
+  final selectedRegional = List<String>.from(currentFilters.selectedRegional);
   final selectedHabitat = List<String>.from(currentFilters.selectedHabitat);
   final selectedGroup2 = List<String>.from(currentFilters.selectedGroup2);
   final selectedGroup3 = List<String>.from(currentFilters.selectedGroup3);
 
   // Où ?
   final selectedAreaComIds = List<int>.from(currentFilters.selectedAreaComIds);
-  final selectedAreaComNames = List<String>.from(
-    currentFilters.selectedAreaComNames,
-  );
+  final selectedAreaComNames =
+      List<String>.from(currentFilters.selectedAreaComNames);
   final selectedAreaDepIds = List<int>.from(currentFilters.selectedAreaDepIds);
-  final selectedAreaDepNames = List<String>.from(
-    currentFilters.selectedAreaDepNames,
-  );
+  final selectedAreaDepNames =
+      List<String>.from(currentFilters.selectedAreaDepNames);
 
   // Quand ?
   DateFilterMode dateMode = currentFilters.dateMode == DateMode.period
       ? DateFilterMode.period
       : DateFilterMode.betweenDates;
-
   DateTime? selectedDateMin = currentFilters.dateMin;
   DateTime? selectedDateMax = currentFilters.dateMax;
 
@@ -78,6 +81,12 @@ Future<MapFilters?> showFilterDialog({
                             apiService: apiService,
                             selectedCdRefs: selectedCdRefs,
                             selectedTaxonLabels: selectedTaxonLabels,
+                            selectedProtection: selectedProtection,
+                            selectedRegulation: selectedRegulation,
+                            selectedWorldwide: selectedWorldwide,
+                            selectedEuropean: selectedEuropean,
+                            selectedNational: selectedNational,
+                            selectedRegional: selectedRegional,
                             selectedHabitat: selectedHabitat,
                             selectedGroup2: selectedGroup2,
                             selectedGroup3: selectedGroup3,
@@ -111,7 +120,7 @@ Future<MapFilters?> showFilterDialog({
                               setStateDialog(() => selectedDateMax = date);
                             },
                           ),
-
+                          
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -142,6 +151,12 @@ Future<MapFilters?> showFilterDialog({
                               setStateDialog(() {
                                 selectedCdRefs.clear();
                                 selectedTaxonLabels.clear();
+                                selectedProtection.clear();
+                                selectedRegulation.clear();
+                                selectedWorldwide.clear();
+                                selectedEuropean.clear();
+                                selectedNational.clear();
+                                selectedRegional.clear();
                                 selectedHabitat.clear();
                                 selectedGroup2.clear();
                                 selectedGroup3.clear();
@@ -176,6 +191,12 @@ Future<MapFilters?> showFilterDialog({
                                     MapFilters(
                                       selectedCdRefs: selectedCdRefs,
                                       selectedTaxonLabels: selectedTaxonLabels,
+                                      selectedProtection: selectedProtection,
+                                      selectedRegulation: selectedRegulation,
+                                      selectedWorldwide: selectedWorldwide,
+                                      selectedEuropean: selectedEuropean,
+                                      selectedNational: selectedNational,
+                                      selectedRegional: selectedRegional,
                                       selectedHabitat: selectedHabitat,
                                       selectedGroup2: selectedGroup2,
                                       selectedGroup3: selectedGroup3,

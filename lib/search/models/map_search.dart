@@ -3,6 +3,12 @@ enum DateMode { betweenDates, period }
 class MapFilters {
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
+  final List<String> selectedProtection;
+  final List<String> selectedRegulation;
+  final List<String> selectedWorldwide;
+  final List<String> selectedEuropean;
+  final List<String> selectedNational;
+  final List<String> selectedRegional;
   final List<String> selectedHabitat;
   final List<String> selectedGroup2;
   final List<String> selectedGroup3;
@@ -17,6 +23,12 @@ class MapFilters {
   const MapFilters({
     this.selectedCdRefs = const [],
     this.selectedTaxonLabels = const [],
+    this.selectedProtection = const [],
+    this.selectedRegulation = const [],
+    this.selectedWorldwide = const [],
+    this.selectedEuropean = const [],
+    this.selectedNational = const [],
+    this.selectedRegional = const [],
     this.selectedHabitat = const [],
     this.selectedGroup2 = const [],
     this.selectedGroup3 = const [],
@@ -45,8 +57,36 @@ class MapFilters {
           .where((t) => t["isRank"] == true)
           .map((t) => t["cd_ref"])
           .toList();
-      if (cdRefParents.isNotEmpty) {
-        filters["cd_ref_parent"] = cdRefParents;
+      if (cdRefParents.isNotEmpty) filters["cd_ref_parent"] = cdRefParents;
+
+      // Protection
+      if (selectedProtection.isNotEmpty) {
+        filters["protections_protection_status"] = selectedProtection;
+      }
+
+      // Réglementation
+      if (selectedRegulation.isNotEmpty) {
+        filters["regulations_protection_status"] = selectedRegulation;
+      }
+
+      // Liste rouge mondiale
+      if (selectedWorldwide.isNotEmpty) {
+        filters["worldwide_red_lists"] = selectedWorldwide;
+      }
+
+      // Liste rouge européenne
+      if (selectedEuropean.isNotEmpty) {
+        filters["european_red_lists"] = selectedEuropean;
+      }
+
+      // Liste rouge nationale
+      if (selectedNational.isNotEmpty) {
+        filters["national_red_lists"] = selectedNational;
+      }
+
+      // Liste rouge régionale
+      if (selectedRegional.isNotEmpty) {
+        filters["regional_red_lists"] = selectedRegional;
       }
 
       // Habitat
@@ -100,6 +140,12 @@ class MapFilters {
   bool get isEmpty =>
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
+      selectedProtection.isEmpty &&
+      selectedRegulation.isEmpty &&
+      selectedWorldwide.isEmpty &&
+      selectedEuropean.isEmpty &&
+      selectedNational.isEmpty &&
+      selectedRegional.isEmpty &&
       selectedHabitat.isEmpty &&
       selectedGroup2.isEmpty &&
       selectedGroup3.isEmpty &&

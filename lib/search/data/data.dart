@@ -8,6 +8,76 @@ class FilterOption<T> {
   });
 }
 
+// Protections
+final List<FilterOption<String>> protectionStatusOptions = [
+  FilterOption(label: "Protection départementale", value: "PD"),
+  FilterOption(label: "Protection nationale", value: "PN"),
+  FilterOption(label: "Protection régionale", value: "PR"),
+];
+
+// Réglementations
+final List<FilterOption<String>> regulationStatusOptions = [
+  FilterOption(label: "Interdiction d'introduction", value: "REGLII"),
+  FilterOption(label: "Lutte contre certaines espèces", value: "REGLLUTTE"),
+  FilterOption(label: "Réglementation", value: "REGL"),
+  FilterOption(label: "Réglementation sans objet", value: "REGLSO"),
+];
+
+// Liste rouge mondiale
+final List<FilterOption<String>> worldwideRedListOptions = [
+  FilterOption(label: "EX - Éteinte", value: "EX"),
+  FilterOption(label: "EW - Éteinte à l'état sauvage", value: "EW"),
+  FilterOption(label: "CR - En danger critique", value: "CR"),
+  FilterOption(label: "EN - En danger", value: "EN"),
+  FilterOption(label: "VU - Vulnérable", value: "VU"),
+  FilterOption(label: "NT - Quasi menacée", value: "NT"),
+  FilterOption(label: "LC - Préoccupation mineure", value: "LC"),
+  FilterOption(label: "DD - Données insuffisantes", value: "DD"),
+];
+
+// Liste rouge européenne
+final List<FilterOption<String>> europeanRedListOptions = [
+  FilterOption(label: "EX - Éteinte", value: "EX"),
+  FilterOption(label: "CR - En danger critique", value: "CR"),
+  FilterOption(label: "EN - En danger", value: "EN"),
+  FilterOption(label: "VU - Vulnérable", value: "VU"),
+  FilterOption(label: "NT - Quasi menacée", value: "NT"),
+  FilterOption(label: "LC - Préoccupation mineure", value: "LC"),
+  FilterOption(label: "DD - Données insuffisantes", value: "DD"),
+];
+
+// Liste rouge nationale
+final List<FilterOption<String>> nationalRedListOptions = [
+  FilterOption(label: "EX - Éteinte au niveau mondial", value: "EX"),
+  FilterOption(label: "RE - Disparue au niveau régional", value: "RE"),
+  FilterOption(label: "CR - En danger critique", value: "CR"),
+  FilterOption(label: "CR* - Éteinte ou disparue ?", value: "CR*"),
+  FilterOption(label: "EN - En danger", value: "EN"),
+  FilterOption(label: "VU - Vulnérable", value: "VU"),
+  FilterOption(label: "NT - Quasi menacée", value: "NT"),
+  FilterOption(label: "LC - Préoccupation mineure", value: "LC"),
+  FilterOption(label: "DD - Données insuffisantes", value: "DD"),
+  FilterOption(label: "NA - Non applicable", value: "NA"),
+  FilterOption(label: "NE - Non évaluée", value: "NE"),
+];
+
+// Liste rouge régionale
+final List<FilterOption<String>> regionalRedListOptions = [
+  FilterOption(label: "EX - Éteinte au niveau mondial", value: "EX"),
+  FilterOption(label: "EW - Éteinte à l'état sauvage", value: "EW"),
+  FilterOption(label: "RE - Disparue au niveau régional", value: "RE"),
+  FilterOption(label: "RE? - Disparue au niveau régional ?", value: "RE?"),
+  FilterOption(label: "CR - En danger critique", value: "CR"),
+  FilterOption(label: "CR* - Éteinte ou disparue ?", value: "CR*"),
+  FilterOption(label: "EN - En danger", value: "EN"),
+  FilterOption(label: "VU - Vulnérable", value: "VU"),
+  FilterOption(label: "NT - Quasi menacée", value: "NT"),
+  FilterOption(label: "LC - Préoccupation mineure", value: "LC"),
+  FilterOption(label: "DD - Données insuffisantes", value: "DD"),
+  FilterOption(label: "NA - Non applicable", value: "NA"),
+  FilterOption(label: "NE - Non évaluée", value: "NE"),
+];
+
 // Habitat
 final List<FilterOption<String>> habitatOptions = [
   FilterOption(label: "Marin", value: "1"),
