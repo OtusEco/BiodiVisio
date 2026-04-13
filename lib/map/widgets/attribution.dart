@@ -17,8 +17,6 @@ class MapAttribution extends StatelessWidget {
 
   static const Map<String, String> _attributions = {
     "OSM": "© les contributeurs d'OpenStreetMap",
-    "Satellite":
-        "© Esri - Source : Esri, Maxar, Earthstar Geographics, and the GIS User Community",
     "Plan IGN": "© IGN",
     "Ortho IGN": "© IGN",
   };

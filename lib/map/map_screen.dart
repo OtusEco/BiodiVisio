@@ -46,8 +46,6 @@ class _MapScreenState extends State<MapScreen> {
 
   final Map<String, String> _baseMaps = {
     "OSM": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "Satellite":
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     "Plan IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png&STYLE=normal",
     "Ortho IGN":
