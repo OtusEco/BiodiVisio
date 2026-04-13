@@ -48,9 +48,9 @@ class _MapScreenState extends State<MapScreen> {
     "OSM": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "Satellite":
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    "Plan IGN": 
+    "Plan IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png&STYLE=normal",
-    "Ortho IGN": 
+    "Ortho IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg&STYLE=normal",
   };
 
@@ -72,7 +72,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   // Sous titre
-
   String get _subtitle {
     if (_filters.isEmpty) {
       return widget.skipInitialLoad
@@ -89,6 +88,26 @@ class _MapScreenState extends State<MapScreen> {
       }).toList();
 
       parts.add(cleaned.join(", "));
+    }
+
+    final filterMap = {
+      "Protection": _filters.selectedProtection,
+      "Réglementation": _filters.selectedRegulation,
+      "Liste rouge mondiale": _filters.selectedWorldwide,
+      "Liste rouge européenne": _filters.selectedEuropean,
+      "Liste rouge nationale": _filters.selectedNational,
+      "Liste rouge régionale": _filters.selectedRegional,
+      "Habitat": _filters.selectedHabitat,
+      "Groupe 2 - INPN": _filters.selectedGroup2,
+      "Groupe 3 - INPN": _filters.selectedGroup3,
+    };
+
+    filterMap.forEach((label, list) {
+      if (list.isNotEmpty) parts.add("$label (${list.length})");
+    });
+
+    if (_filters.selectedZnief) {
+      parts.add("Espèces ZNIEFF");
     }
 
     // Dates
@@ -402,7 +421,10 @@ class _MapScreenState extends State<MapScreen> {
               point: refinedPosition,
               child: Icon(
                 Icons.my_location,
-                color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
+                color:
+                    (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
+                        ? Colors.black
+                        : Colors.white,
                 size: 35,
               ),
             ),
@@ -464,7 +486,9 @@ class _MapScreenState extends State<MapScreen> {
           point: userLatLng,
           child: Icon(
             Icons.my_location,
-            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN") ? Colors.black : Colors.white,
+            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
+                ? Colors.black
+                : Colors.white,
             size: 35,
           ),
         ),

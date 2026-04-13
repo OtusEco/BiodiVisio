@@ -3,6 +3,16 @@ enum DateMode { betweenDates, period }
 class MapFilters {
   final List<int> selectedCdRefs;
   final List<Map<String, dynamic>> selectedTaxonLabels;
+  final List<String> selectedProtection;
+  final List<String> selectedRegulation;
+  final bool selectedZnief;
+  final List<String> selectedWorldwide;
+  final List<String> selectedEuropean;
+  final List<String> selectedNational;
+  final List<String> selectedRegional;
+  final List<String> selectedHabitat;
+  final List<String> selectedGroup2;
+  final List<String> selectedGroup3;
   final List<int> selectedAreaComIds;
   final List<String> selectedAreaComNames;
   final List<int> selectedAreaDepIds;
@@ -14,6 +24,16 @@ class MapFilters {
   const MapFilters({
     this.selectedCdRefs = const [],
     this.selectedTaxonLabels = const [],
+    this.selectedProtection = const [],
+    this.selectedRegulation = const [],
+    this.selectedZnief = false,
+    this.selectedWorldwide = const [],
+    this.selectedEuropean = const [],
+    this.selectedNational = const [],
+    this.selectedRegional = const [],
+    this.selectedHabitat = const [],
+    this.selectedGroup2 = const [],
+    this.selectedGroup3 = const [],
     this.selectedAreaComIds = const [],
     this.selectedAreaComNames = const [],
     this.selectedAreaDepIds = const [],
@@ -27,29 +47,80 @@ class MapFilters {
     final Map<String, dynamic> filters = {};
 
     if (!isFirstLoad) {
-      if (selectedCdRefs.isNotEmpty) {
-        filters["cd_ref"] = selectedCdRefs;
+      // Taxons
+      final cdRefs = selectedTaxonLabels
+          .where((t) => t["isRank"] != true)
+          .map((t) => t["cd_ref"])
+          .toList();
+      if (cdRefs.isNotEmpty) filters["cd_ref"] = cdRefs;
+
+      // Rangs
+      final cdRefParents = selectedTaxonLabels
+          .where((t) => t["isRank"] == true)
+          .map((t) => t["cd_ref"])
+          .toList();
+      if (cdRefParents.isNotEmpty) filters["cd_ref_parent"] = cdRefParents;
+
+      // Protection
+      if (selectedProtection.isNotEmpty) {
+        filters["protections_protection_status"] = selectedProtection;
       }
 
-      if (selectedTaxonLabels.isNotEmpty) {
-        final cdRefParents = selectedTaxonLabels
-            .where((taxon) => taxon["nom_rang"] != null)
-            .map((taxon) => taxon["cd_ref"])
-            .toList();
-
-        if (cdRefParents.isNotEmpty) {
-          filters["cd_ref_parent"] = cdRefParents;
-        }
+      // Réglementation
+      if (selectedRegulation.isNotEmpty) {
+        filters["regulations_protection_status"] = selectedRegulation;
       }
 
+      // ZNIEFF
+      if (selectedZnief) {
+        filters["znief_protection_status"] = true;
+      }
+
+      // Liste rouge mondiale
+      if (selectedWorldwide.isNotEmpty) {
+        filters["worldwide_red_lists"] = selectedWorldwide;
+      }
+
+      // Liste rouge européenne
+      if (selectedEuropean.isNotEmpty) {
+        filters["european_red_lists"] = selectedEuropean;
+      }
+
+      // Liste rouge nationale
+      if (selectedNational.isNotEmpty) {
+        filters["national_red_lists"] = selectedNational;
+      }
+
+      // Liste rouge régionale
+      if (selectedRegional.isNotEmpty) {
+        filters["regional_red_lists"] = selectedRegional;
+      }
+
+      // Habitat
+      if (selectedHabitat.isNotEmpty) {
+        filters["taxonomy_id_hab"] =
+            selectedHabitat.map((e) => int.parse(e)).toList();
+      }
+
+      // Groupe 2
+      if (selectedGroup2.isNotEmpty) {
+        filters["taxonomy_group2_inpn"] = selectedGroup2;
+      }
+
+      // Groupe 3
+      if (selectedGroup3.isNotEmpty) {
+        filters["taxonomy_group3_inpn"] = selectedGroup3;
+      }
+
+      // Localisation
       if (selectedAreaComIds.isNotEmpty) {
         filters["area_COM"] = selectedAreaComIds;
       }
-
       if (selectedAreaDepIds.isNotEmpty) {
         filters["area_DEP"] = selectedAreaDepIds;
       }
 
+      // Dates
       if (dateMode == DateMode.period) {
         if (dateMin != null && dateMax != null) {
           filters["period_start"] =
@@ -76,6 +147,16 @@ class MapFilters {
   bool get isEmpty =>
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
+      selectedProtection.isEmpty &&
+      selectedRegulation.isEmpty &&
+      !selectedZnief &&
+      selectedWorldwide.isEmpty &&
+      selectedEuropean.isEmpty &&
+      selectedNational.isEmpty &&
+      selectedRegional.isEmpty &&
+      selectedHabitat.isEmpty &&
+      selectedGroup2.isEmpty &&
+      selectedGroup3.isEmpty &&
       selectedAreaComIds.isEmpty &&
       selectedAreaDepIds.isEmpty &&
       dateMin == null &&

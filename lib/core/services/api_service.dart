@@ -24,7 +24,7 @@ class ApiService {
     "https://expert.silene.eu/api": "https://taxhub.silene.eu/api/taxref/",
     "https://donnees.biodiversite-auvergne-rhone-alpes.fr/api":
         "https://taxons.biodiversite-aura.fr/api/taxref/",
-        "https://reensauvagerlaferme.fr/geonature/api":
+    "https://reensauvagerlaferme.fr/geonature/api":
         "https://reensauvagerlaferme.fr/taxhub/api/taxref/",
   };
 
@@ -259,23 +259,13 @@ class ApiService {
 
   // Récupération des observations
   Future<List<dynamic>> fetchObservations({
-    List<int>? cdRefs, // taxons précis
-    List<int>? cdRefParents, // rangs taxonomiques
-    Map<String, dynamic>? otherFilters, // autres filtres
+    Map<String, dynamic>? filters,
   }) async {
-    // Construire le corps de la requête
-    final filters = {...?otherFilters};
-
-    if (cdRefs != null && cdRefs.isNotEmpty) {
-      filters["cd_ref"] = cdRefs; // filtre sur taxons précis
-    }
-
-    if (cdRefParents != null && cdRefParents.isNotEmpty) {
-      filters["cd_ref_parent"] = cdRefParents; // filtre sur rangs
-    }
-
     // Requête
-    final response = await postForWeb("/synthese/for_web", body: filters);
+    final response = await postForWeb(
+      "/synthese/for_web",
+      body: filters ?? {},
+    );
 
     // Retourner les observations si présentes
     if (response is Map && response.containsKey("features")) {
