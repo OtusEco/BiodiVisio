@@ -21,6 +21,7 @@ Future<MapFilters?> showFilterDialog({
       List<String>.from(currentFilters.selectedProtection);
   final selectedRegulation =
       List<String>.from(currentFilters.selectedRegulation);
+  bool selectedZnief = currentFilters.selectedZnief;
   final selectedWorldwide = List<String>.from(currentFilters.selectedWorldwide);
   final selectedEuropean = List<String>.from(currentFilters.selectedEuropean);
   final selectedNational = List<String>.from(currentFilters.selectedNational);
@@ -83,6 +84,7 @@ Future<MapFilters?> showFilterDialog({
                             selectedTaxonLabels: selectedTaxonLabels,
                             selectedProtection: selectedProtection,
                             selectedRegulation: selectedRegulation,
+                            selectedZnief: selectedZnief,
                             selectedWorldwide: selectedWorldwide,
                             selectedEuropean: selectedEuropean,
                             selectedNational: selectedNational,
@@ -90,6 +92,11 @@ Future<MapFilters?> showFilterDialog({
                             selectedHabitat: selectedHabitat,
                             selectedGroup2: selectedGroup2,
                             selectedGroup3: selectedGroup3,
+                            onZniefChanged: (value) {
+                              setStateDialog(() {
+                                selectedZnief = value;
+                              });
+                            },
                           ),
 
                           const SizedBox(height: 15),
@@ -120,7 +127,7 @@ Future<MapFilters?> showFilterDialog({
                               setStateDialog(() => selectedDateMax = date);
                             },
                           ),
-                          
+
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -153,6 +160,7 @@ Future<MapFilters?> showFilterDialog({
                                 selectedTaxonLabels.clear();
                                 selectedProtection.clear();
                                 selectedRegulation.clear();
+                                selectedZnief = false;
                                 selectedWorldwide.clear();
                                 selectedEuropean.clear();
                                 selectedNational.clear();
@@ -193,6 +201,7 @@ Future<MapFilters?> showFilterDialog({
                                       selectedTaxonLabels: selectedTaxonLabels,
                                       selectedProtection: selectedProtection,
                                       selectedRegulation: selectedRegulation,
+                                      selectedZnief: selectedZnief,
                                       selectedWorldwide: selectedWorldwide,
                                       selectedEuropean: selectedEuropean,
                                       selectedNational: selectedNational,

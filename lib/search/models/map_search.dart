@@ -5,6 +5,7 @@ class MapFilters {
   final List<Map<String, dynamic>> selectedTaxonLabels;
   final List<String> selectedProtection;
   final List<String> selectedRegulation;
+  final bool selectedZnief;
   final List<String> selectedWorldwide;
   final List<String> selectedEuropean;
   final List<String> selectedNational;
@@ -25,6 +26,7 @@ class MapFilters {
     this.selectedTaxonLabels = const [],
     this.selectedProtection = const [],
     this.selectedRegulation = const [],
+    this.selectedZnief = false,
     this.selectedWorldwide = const [],
     this.selectedEuropean = const [],
     this.selectedNational = const [],
@@ -67,6 +69,11 @@ class MapFilters {
       // Réglementation
       if (selectedRegulation.isNotEmpty) {
         filters["regulations_protection_status"] = selectedRegulation;
+      }
+
+      // ZNIEFF
+      if (selectedZnief) {
+        filters["znief_protection_status"] = true;
       }
 
       // Liste rouge mondiale
@@ -142,6 +149,7 @@ class MapFilters {
       selectedTaxonLabels.isEmpty &&
       selectedProtection.isEmpty &&
       selectedRegulation.isEmpty &&
+      !selectedZnief &&
       selectedWorldwide.isEmpty &&
       selectedEuropean.isEmpty &&
       selectedNational.isEmpty &&

@@ -106,6 +106,10 @@ class _MapScreenState extends State<MapScreen> {
       if (list.isNotEmpty) parts.add("$label (${list.length})");
     });
 
+    if (_filters.selectedZnief) {
+      parts.add("Espèces ZNIEFF");
+    }
+
     // Dates
     if (_filters.dateMin != null || _filters.dateMax != null) {
       String format(DateTime? d) {

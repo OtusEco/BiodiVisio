@@ -12,6 +12,7 @@ enum TaxonSearchType {
   ranks,
   protection,
   regulation,
+  znief,
   worldwideRedList,
   europeanRedList,
   nationalRedList,
@@ -25,6 +26,7 @@ enum _SelectionGroup {
   taxon,
   protection,
   regulation,
+  znief,
   worldwide,
   european,
   national,
@@ -40,6 +42,8 @@ class TaxonFilterSection extends StatefulWidget {
   final List<Map<String, dynamic>> selectedTaxonLabels;
   final List<String> selectedProtection;
   final List<String> selectedRegulation;
+  final bool selectedZnief;
+  final ValueChanged<bool> onZniefChanged;
   final List<String> selectedWorldwide;
   final List<String> selectedEuropean;
   final List<String> selectedNational;
@@ -55,6 +59,8 @@ class TaxonFilterSection extends StatefulWidget {
     required this.selectedTaxonLabels,
     required this.selectedProtection,
     required this.selectedRegulation,
+    required this.selectedZnief,
+    required this.onZniefChanged,
     required this.selectedWorldwide,
     required this.selectedEuropean,
     required this.selectedNational,
@@ -121,6 +127,8 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
         return _SelectionGroup.protection;
       case TaxonSearchType.regulation:
         return _SelectionGroup.regulation;
+      case TaxonSearchType.znief:
+        return _SelectionGroup.znief;
       case TaxonSearchType.worldwideRedList:
         return _SelectionGroup.worldwide;
       case TaxonSearchType.europeanRedList:
@@ -142,6 +150,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
     return widget.selectedTaxonLabels.isNotEmpty ||
         widget.selectedProtection.isNotEmpty ||
         widget.selectedRegulation.isNotEmpty ||
+        widget.selectedZnief ||
         widget.selectedWorldwide.isNotEmpty ||
         widget.selectedEuropean.isNotEmpty ||
         widget.selectedNational.isNotEmpty ||
@@ -158,6 +167,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             widget.selectedProtection.isNotEmpty) ||
         (group != _SelectionGroup.regulation &&
             widget.selectedRegulation.isNotEmpty) ||
+        (group != _SelectionGroup.znief && widget.selectedZnief) ||
         (group != _SelectionGroup.worldwide &&
             widget.selectedWorldwide.isNotEmpty) ||
         (group != _SelectionGroup.european &&
@@ -310,6 +320,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
     final canSelectTaxonOrRank = _canSelectType(TaxonSearchType.taxon);
     final canSelectProtection = _canSelectType(TaxonSearchType.protection);
     final canSelectRegulation = _canSelectType(TaxonSearchType.regulation);
+    final canSelectZnief = _canSelectType(TaxonSearchType.znief);
     final canSelectWorldwide = _canSelectType(TaxonSearchType.worldwideRedList);
     final canSelectEuropean = _canSelectType(TaxonSearchType.europeanRedList);
     final canSelectNational = _canSelectType(TaxonSearchType.nationalRedList);
@@ -368,6 +379,18 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 "Réglementation",
                 style: TextStyle(
                   color: canSelectRegulation ? Colors.black : Colors.grey,
+                ),
+              ),
+            ),
+            DropdownMenuItem(
+              value: TaxonSearchType.znief,
+              enabled: _canSelectType(TaxonSearchType.znief),
+              child: Text(
+                "ZNIEFF",
+                style: TextStyle(
+                  color: _canSelectType(TaxonSearchType.znief)
+                      ? Colors.black
+                      : Colors.grey,
                 ),
               ),
             ),
@@ -556,6 +579,19 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
               });
             },
           ),
+        ] else if (searchType == TaxonSearchType.znief) ...[
+          CheckboxListTile(
+            value: widget.selectedZnief,
+            onChanged: canSelectZnief
+                ? (value) {
+                    setState(() {
+                      widget.onZniefChanged(value ?? false);
+                    });
+                  }
+                : null,
+            title: const Text("Espèces déterminantes ZNIEFF"),
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
         ] else if (searchType == TaxonSearchType.worldwideRedList) ...[
           _buildSelectableFilterList(
             filteredOptions: worldwideFiltered,
@@ -708,7 +744,7 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
             },
           ),
         ],
-        
+
         // Elements sélectionnés
         if (widget.selectedTaxonLabels.isNotEmpty) ...[
           const SizedBox(height: 10),
@@ -756,6 +792,23 @@ class _TaxonFilterSectionState extends State<TaxonFilterSection> {
                 widget.selectedRegulation.remove(value);
               });
             },
+          ),
+        ],
+        if (widget.selectedZnief) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            children: [
+              Chip(
+                label: const Text("ZNIEFF"),
+                onDeleted: () {
+                  setState(() {
+                    widget.onZniefChanged(false);
+                  });
+                },
+              ),
+            ],
           ),
         ],
         if (widget.selectedWorldwide.isNotEmpty) ...[
