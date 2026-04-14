@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -38,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _loading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
 
   List<String> _recentServers = [];
 
@@ -99,7 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
       url: "https://geonature.cbn-alpin.fr",
     ),
     ServerItem(name: "Silene", url: "https://expert.silene.eu"),
-    ServerItem(name: "Démo GeoNature", url: "https://demo.geonature.fr/geonature"),
+    ServerItem(
+        name: "Démo GeoNature", url: "https://demo.geonature.fr/geonature"),
   ];
 
   List<ServerItem> get _serverSuggestions {
@@ -115,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     _loadRecentServers();
     _appVersionFuture = _getAppVersion();
+    _tryAutoLogin();
   }
 
   Future<String> _getAppVersion() async {
@@ -138,6 +143,40 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     return true;
+  }
+
+  Future<void> _tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionString = prefs.getString("session");
+
+    if (sessionString == null) return;
+
+    try {
+      final session = jsonDecode(sessionString);
+
+      _apiService.importSession(session);
+
+      if (!_apiService.isAuthenticated) return;
+
+      final baseUrl = session["apiBaseUrl"].toString().replaceAll("/api", "");
+
+      const specialServers = ["https://expert.silene.eu"];
+      final bool skipInitialLoad = specialServers.contains(baseUrl);
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MapScreen(
+            apiService: _apiService,
+            skipInitialLoad: skipInitialLoad,
+          ),
+        ),
+      );
+    } catch (_) {
+      // session corrompue → on ignore
+    }
   }
 
   @override
@@ -199,6 +238,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       await _addRecentServer(baseUrl);
+
+      if (_rememberMe) {
+        final prefs = await SharedPreferences.getInstance();
+
+        final session = _apiService.exportSession();
+
+        await prefs.setString("session", jsonEncode(session));
+      }
 
       if (!mounted) return;
 
@@ -276,18 +323,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 // Sous-titre
                 if (!isKeyboardOpen)
-                const Center(
-                  child: Text(
-                    "Application de visualisation des données de GeoNature",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black,
+                  const Center(
+                    child: Text(
+                      "Application de visualisation des données de GeoNature",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
 
                 SizedBox(height: isKeyboardOpen ? 16 : 60),
 
@@ -325,8 +372,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               return _serverSuggestions.where((server) {
                                 return server.name.toLowerCase().contains(
-                                      query,
-                                    ) ||
+                                          query,
+                                        ) ||
                                     server.url.toLowerCase().contains(query);
                               });
                             },
@@ -338,7 +385,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context,
                               ).requestFocus(_loginFocusNode);
                             },
-                            fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                            fieldViewBuilder:
+                                (context, controller, focusNode, onSubmit) {
                               return TextFormField(
                                 controller: controller,
                                 focusNode: focusNode,
@@ -529,6 +577,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
+                          const SizedBox(height: 16),
+
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
+                              const Text("Se souvenir de moi"),
+                            ],
+                          ),
+
                           const SizedBox(height: 24),
 
                           // Bouton connexion
@@ -552,9 +616,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   duration: const Duration(milliseconds: 200),
                                   transitionBuilder: (child, animation) =>
                                       FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      ),
+                                    opacity: animation,
+                                    child: child,
+                                  ),
                                   child: _loading
                                       ? const SizedBox(
                                           key: ValueKey("loader"),
@@ -675,7 +739,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-
+                    
                     FutureBuilder<String>(
                       future: _appVersionFuture,
                       builder: (context, snapshot) {

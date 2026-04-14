@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:biodivisio/core/services/api_service.dart';
 import 'package:biodivisio/core/services/location_service.dart';
@@ -301,6 +302,12 @@ class _MapScreenState extends State<MapScreen> {
 
       if (e.statusCode == 401) {
         widget.apiService.logout();
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove("session");
+
+        if (!mounted) return;
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -391,8 +398,14 @@ class _MapScreenState extends State<MapScreen> {
 
   // Déconnexion
 
-  void _logout() {
+  void _logout() async {
     widget.apiService.logout();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("session");
+
+    if (!mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

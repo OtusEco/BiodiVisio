@@ -19,6 +19,22 @@ class ApiService {
   bool _useCookie = false; // true si ancien serveur
   String? _apiBaseUrl;
 
+  Map<String, dynamic> exportSession() {
+    return {
+      "token": _token,
+      "useCookie": _useCookie,
+      "apiBaseUrl": _apiBaseUrl,
+    };
+  }
+
+  void importSession(Map<String, dynamic> data) {
+    _token = data["token"];
+    _useCookie = data["useCookie"] ?? false;
+    _apiBaseUrl = data["apiBaseUrl"];
+  }
+
+  bool get isAuthenticated => _token != null && _apiBaseUrl != null;
+
   // Dictionnaire des serveurs avec leurs URL spécifiques pour TaxRef
   final Map<String, String> serverTaxRefUrls = {
     "https://expert.silene.eu/api": "https://taxhub.silene.eu/api/taxref/",
