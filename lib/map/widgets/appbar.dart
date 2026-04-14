@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:biodivisio/core/theme/theme.dart';
 
 class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String serverName;
   final String subtitle;
   final Map<String, String> baseMaps;
   final String currentBaseMap;
@@ -15,6 +16,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const MapAppBar({
     super.key,
+    required this.serverName,
     required this.subtitle,
     required this.baseMaps,
     required this.currentBaseMap,
@@ -43,9 +45,13 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.primary,
               ),
             ),
-            const TextSpan(
-              text: "Carte des observations",
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            TextSpan(
+              text: serverName,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),

@@ -515,6 +515,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MapAppBar(
+        serverName: Uri.parse(widget.apiService.baseUrl).host,
         subtitle: _subtitle,
         baseMaps: _baseMaps,
         currentBaseMap: _currentBaseMap,
