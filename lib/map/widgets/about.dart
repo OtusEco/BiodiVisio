@@ -73,21 +73,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                           },
                       ),
                       const TextSpan(
-                        text:
-                            ".\n\nElle offre une interface cartographique fluide, des outils de recherche avancés (taxonomie, espace, "
-                            "période) et un accès rapide aux informations d'observation pour les naturalistes, gestionnaires d'espaces naturels et chercheurs.\n\n"
-                            "Conçue pour une utilisation sur le terrain, ",
-                      ),
-                      const TextSpan(
-                        text: "BiodiVisio",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const TextSpan(
-                        text:
-                            " facilite l'accès et la diffusion de la connaissance sur la biodiversité.",
+                        text: ".",
                       ),
                     ],
                   ),
@@ -117,22 +103,28 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                         children: [
                           Icon(Icons.location_on, color: Colors.blue),
                           SizedBox(width: 8),
-                          Text("Position précise"),
+                          Text("Localisation sous la forme d'un point"),
                         ],
                       ),
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           Icon(Icons.wrong_location, color: Colors.orange),
                           SizedBox(width: 8),
-                          Text("Position approximative"),
+                          Expanded(
+                            child: Text(
+                              "Localisation sous la forme d'une ligne représentée ici par son point moyen",
+                            ),
+                          ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           Icon(Icons.location_off, color: Colors.red),
                           SizedBox(width: 8),
-                          Text("Position non diffusée"),
+                          Text(
+                              "Localisation sous la forme d'un polygone"),
                         ],
                       ),
                     ],
@@ -206,9 +198,7 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
