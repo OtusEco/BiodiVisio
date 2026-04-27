@@ -43,14 +43,15 @@ class _MapScreenState extends State<MapScreen> {
 
   MapFilters _filters = const MapFilters();
 
-  String _currentBaseMap = "OSM";
+  String _currentBaseMap = "OpenStreetMap";
 
   final Map<String, String> _baseMaps = {
-    "OSM": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "OpenStreetMap": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "Plan IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png&STYLE=normal",
     "Ortho IGN":
         "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg&STYLE=normal",
+    "OpenTopoMap": "https://tile.opentopomap.org/{z}/{x}/{y}.png",
   };
 
   double _currentZoom = 10;
@@ -432,10 +433,11 @@ class _MapScreenState extends State<MapScreen> {
               point: refinedPosition,
               child: Icon(
                 Icons.my_location,
-                color:
-                    (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
-                        ? Colors.black
-                        : Colors.white,
+                color: (_currentBaseMap == "OpenStreetMap" ||
+                        _currentBaseMap == "Plan IGN" ||
+                        _currentBaseMap == "OpenTopoMap")
+                    ? Colors.black
+                    : Colors.white,
                 size: 35,
               ),
             ),
@@ -497,7 +499,9 @@ class _MapScreenState extends State<MapScreen> {
           point: userLatLng,
           child: Icon(
             Icons.my_location,
-            color: (_currentBaseMap == "OSM" || _currentBaseMap == "Plan IGN")
+            color: (_currentBaseMap == "OpenStreetMap" ||
+                    _currentBaseMap == "Plan IGN" ||
+                    _currentBaseMap == "OpenTopoMap")
                 ? Colors.black
                 : Colors.white,
             size: 35,

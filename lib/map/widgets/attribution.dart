@@ -16,9 +16,10 @@ class MapAttribution extends StatelessWidget {
   });
 
   static const Map<String, String> _attributions = {
-    "OSM": "© les contributeurs d'OpenStreetMap",
+    "OpenStreetMap": "© les contributeurs d'OpenStreetMap",
     "Plan IGN": "© IGN",
     "Ortho IGN": "© IGN",
+    "OpenTopoMap": "© les contributeurs d'OpenStreetMap",
   };
 
   String get attributionText =>
@@ -56,9 +57,9 @@ class MapAttribution extends StatelessWidget {
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.75,
                       ),
-                      child: _buildRow(text, allowWrap: true),
+                      child: _buildRow(text, allowWrap: true, expanded: expanded),
                     )
-                  : IntrinsicWidth(child: _buildRow(text, allowWrap: false)),
+                  : IntrinsicWidth(child: _buildRow(text, allowWrap: false, expanded: expanded)),
             ),
           ),
         ),
@@ -66,9 +67,9 @@ class MapAttribution extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String text, {required bool allowWrap}) {
+  Widget _buildRow(String text, {required bool allowWrap, required bool expanded}) {
     // Gestion spéciale pour OpenStreetMap (avec lien)
-    if (text.contains("OpenStreetMap")) {
+    if (expanded && text.contains("OpenStreetMap")) {
       final parts = text.split("OpenStreetMap");
       return Row(
         mainAxisSize: MainAxisSize.min,
