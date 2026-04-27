@@ -369,6 +369,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
             final props = observation["properties"] ?? {};
 
             final observer = props["observers"] ?? "Aucun observateur";
+            final determiner = props["determiner"] ?? "Aucun déterminateur";
 
             final date = formatObservationDate(
               props["date_min"],
@@ -585,6 +586,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                       ),
 
                       const SizedBox(height: 12),
+
                       RichText(
                         text: TextSpan(
                           style: const TextStyle(
@@ -604,6 +606,26 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                       ),
 
                       const SizedBox(height: 4),
+
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "Déterminateur(s) : ",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(text: "$determiner"),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
 
                       RichText(
                         text: TextSpan(
