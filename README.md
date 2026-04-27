@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/images/logo.png" alt="Logo" width="300"/>
+  <img src="assets/images/logo-blanc.png" alt="Logo" width="300"/>
 </p>
 
 **BiodiVisio** est une application mobile open-source conçue pour la visualisation, l'exploration et la synthèse des données naturalistes issues des instances [GeoNature](https://geonature.fr).
