@@ -59,6 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
       url: "https://geonature.biodiv-occitanie.fr",
     ),
     ServerItem(
+      name: "Clicnat",
+      url: "https://clicnat.fr/geonature",
+    ),
+    ServerItem(
       name: "GeoNat'îdF",
       url: "https://geonature.arb-idf.fr/geonature",
     ),
