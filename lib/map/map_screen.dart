@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_map/flutter_map.dart';
@@ -57,6 +59,8 @@ class _MapScreenState extends State<MapScreen> {
   double _currentZoom = 10;
   bool _isLocating = false;
   bool _osmExpanded = false;
+
+  Timer? _locationTimer;
 
   final MapController _mapController = MapController();
 
@@ -417,6 +421,7 @@ class _MapScreenState extends State<MapScreen> {
   // Géolocalisation
 
   Future<void> _showUserLocation() async {
+    _locationTimer?.cancel();
     setState(() => _isLocating = true);
 
     final double targetZoom = _currentZoom < 10 ? 10 : _currentZoom;
@@ -444,6 +449,7 @@ class _MapScreenState extends State<MapScreen> {
           ];
         });
 
+        _startLocationTimer();
         _mapController.move(refinedPosition, targetZoom);
       },
       gpsError: () {
@@ -510,7 +516,27 @@ class _MapScreenState extends State<MapScreen> {
       ];
     });
 
+    _startLocationTimer();
+
     _mapController.move(userLatLng, targetZoom);
+  }
+
+  void _startLocationTimer() {
+    _locationTimer?.cancel();
+
+    _locationTimer = Timer(const Duration(seconds: 30), () {
+      if (!mounted) return;
+
+      setState(() {
+        _userLocationMarker = [];
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    super.dispose();
   }
 
   // BUILD
