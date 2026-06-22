@@ -213,12 +213,12 @@ class _MapScreenState extends State<MapScreen> {
     setState(() => _loading = true);
 
     try {
-      String endpoint = "/synthese/for_web";
+      String endpoint = "/synthese/for_web?format=grouped_geom";
 
       final body = _filters.toApiPayload(isFirstLoad: _isFirstLoad);
 
       if (_isFirstLoad) {
-        endpoint += "?limit=100"; // pour serveurs classiques
+        endpoint += "&limit=100"; // pour serveurs classiques
         body["limit"] = 100; // pour serveurs qui attendent dans le body
       }
 

@@ -279,7 +279,7 @@ class ApiService {
   }) async {
     // Requête
     final response = await postForWeb(
-      "/synthese/for_web",
+      "/synthese/for_web?format=grouped_geom",
       body: filters ?? {},
     );
 
