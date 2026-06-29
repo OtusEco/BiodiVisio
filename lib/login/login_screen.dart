@@ -659,7 +659,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
 
           // footer
-          if (!isKeyboardOpen)
+          if (!isKeyboardOpen && MediaQuery.of(context).size.height >= 600)
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(

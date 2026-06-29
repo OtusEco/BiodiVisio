@@ -196,7 +196,7 @@ class _MapScreenState extends State<MapScreen> {
     final bounds = _computeBounds();
     if (bounds == null) return;
 
-// Protection contre zoom invalide
+    // Protection contre zoom invalide
     final latDiff = (bounds.north - bounds.south).abs();
     final lngDiff = (bounds.east - bounds.west).abs();
 
@@ -546,7 +546,6 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: MapAppBar(
         serverName: Uri.parse(widget.apiService.baseUrl).host,
-        subtitle: _subtitle,
         baseMaps: _baseMaps,
         currentBaseMap: _currentBaseMap,
         onBaseMapChanged: (value) {
@@ -558,39 +557,64 @@ class _MapScreenState extends State<MapScreen> {
         onAbout: () => showAboutBottomSheet(context),
         onLogout: _logout,
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                MapView(
-                  mapController: _mapController,
-                  markers: _markers,
-                  polygons: _polygons,
-                  userLocationMarker: _userLocationMarker,
-                  baseMaps: _baseMaps,
-                  currentBaseMap: _currentBaseMap,
-                  onZoomChanged: (zoom) {
-                    if ((zoom - _currentZoom).abs() > 0.01) {
-                      _currentZoom = zoom;
-                    }
-                  },
-                  onMapReady: () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Future.microtask(_fitBoundsIfNeeded);
-                    });
-                  },
+      body: Column(
+        children: [
+          // Bandeau sous-titre
+          InkWell(
+            onTap: _openFilterDialog,
+            child: Container(
+              color: Colors.blue.shade100,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                _subtitle,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 14,
                 ),
-                MapAttribution(
-                  baseMapType: _currentBaseMap,
-                  expanded: _osmExpanded,
-                  onTap: () {
-                    setState(() {
-                      _osmExpanded = !_osmExpanded;
-                    });
-                  },
-                ),
-              ],
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
+          ),
+          // Carte
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : Stack(
+                    children: [
+                      MapView(
+                        mapController: _mapController,
+                        markers: _markers,
+                        polygons: _polygons,
+                        userLocationMarker: _userLocationMarker,
+                        baseMaps: _baseMaps,
+                        currentBaseMap: _currentBaseMap,
+                        onZoomChanged: (zoom) {
+                          if ((zoom - _currentZoom).abs() > 0.01) {
+                            _currentZoom = zoom;
+                          }
+                        },
+                        onMapReady: () {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Future.microtask(_fitBoundsIfNeeded);
+                          });
+                        },
+                      ),
+                      MapAttribution(
+                        baseMapType: _currentBaseMap,
+                        expanded: _osmExpanded,
+                        onTap: () {
+                          setState(() {
+                            _osmExpanded = !_osmExpanded;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

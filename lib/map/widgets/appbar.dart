@@ -4,7 +4,6 @@ import 'package:biodivisio/core/theme/theme.dart';
 
 class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String serverName;
-  final String subtitle;
   final Map<String, String> baseMaps;
   final String currentBaseMap;
   final ValueChanged<String> onBaseMapChanged;
@@ -17,7 +16,6 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MapAppBar({
     super.key,
     required this.serverName,
-    required this.subtitle,
     required this.baseMaps,
     required this.currentBaseMap,
     required this.onBaseMapChanged,
@@ -29,7 +27,7 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -94,27 +92,6 @@ class MapAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: onLogout,
         ),
       ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(30),
-        child: Container(
-          color: Colors.blue.shade100,
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          alignment: Alignment.centerLeft,
-          child: InkWell(
-            onTap: onFilter,
-            child: Text(
-              subtitle,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
