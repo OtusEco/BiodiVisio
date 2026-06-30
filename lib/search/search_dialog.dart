@@ -38,6 +38,10 @@ Future<MapFilters?> showFilterDialog({
   final selectedAreaDepNames =
       List<String>.from(currentFilters.selectedAreaDepNames);
 
+  SpatialFilterType spatialFilterType = currentFilters.spatialFilterType;
+  String? geoIntersection = currentFilters.geoIntersection;
+  double? radius = currentFilters.radius;
+
   // Quand ?
   DateFilterMode dateMode = currentFilters.dateMode == DateMode.period
       ? DateFilterMode.period
@@ -108,6 +112,12 @@ Future<MapFilters?> showFilterDialog({
                             selectedAreaComNames: selectedAreaComNames,
                             selectedAreaDepIds: selectedAreaDepIds,
                             selectedAreaDepNames: selectedAreaDepNames,
+                            spatialFilterType: spatialFilterType,
+                            onSpatialTypeChanged: (value) {
+                              setStateDialog(() {
+                                spatialFilterType = value;
+                              });
+                            },
                           ),
 
                           const SizedBox(height: 15),
@@ -215,6 +225,9 @@ Future<MapFilters?> showFilterDialog({
                                       selectedAreaDepIds: selectedAreaDepIds,
                                       selectedAreaDepNames:
                                           selectedAreaDepNames,
+                                      spatialFilterType: spatialFilterType,
+                                      geoIntersection: geoIntersection,
+                                      radius: radius,
                                       dateMin: selectedDateMin,
                                       dateMax: selectedDateMax,
                                       dateMode:

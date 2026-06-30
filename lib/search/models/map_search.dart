@@ -1,3 +1,9 @@
+enum SpatialFilterType {
+  administrative,
+  polygon,
+  circle,
+}
+
 enum DateMode { betweenDates, period }
 
 class MapFilters {
@@ -13,10 +19,16 @@ class MapFilters {
   final List<String> selectedHabitat;
   final List<String> selectedGroup2;
   final List<String> selectedGroup3;
+
   final List<int> selectedAreaComIds;
   final List<String> selectedAreaComNames;
   final List<int> selectedAreaDepIds;
   final List<String> selectedAreaDepNames;
+
+  final SpatialFilterType spatialFilterType;
+  final String? geoIntersection;
+  final double? radius;
+
   final DateTime? dateMin;
   final DateTime? dateMax;
   final DateMode dateMode;
@@ -38,6 +50,9 @@ class MapFilters {
     this.selectedAreaComNames = const [],
     this.selectedAreaDepIds = const [],
     this.selectedAreaDepNames = const [],
+    this.spatialFilterType = SpatialFilterType.administrative,
+    this.geoIntersection,
+    this.radius,
     this.dateMin,
     this.dateMax,
     this.dateMode = DateMode.betweenDates,
@@ -113,11 +128,26 @@ class MapFilters {
       }
 
       // Localisation
-      if (selectedAreaComIds.isNotEmpty) {
-        filters["area_COM"] = selectedAreaComIds;
+      if (spatialFilterType == SpatialFilterType.administrative) {
+        if (selectedAreaComIds.isNotEmpty) {
+          filters["area_COM"] = selectedAreaComIds;
+        }
+
+        if (selectedAreaDepIds.isNotEmpty) {
+          filters["area_DEP"] = selectedAreaDepIds;
+        }
       }
-      if (selectedAreaDepIds.isNotEmpty) {
-        filters["area_DEP"] = selectedAreaDepIds;
+
+      if (spatialFilterType == SpatialFilterType.polygon &&
+          geoIntersection != null) {
+        filters["geoIntersection"] = geoIntersection;
+      }
+
+      if (spatialFilterType == SpatialFilterType.circle &&
+          geoIntersection != null &&
+          radius != null) {
+        filters["geoIntersection"] = geoIntersection;
+        filters["radius"] = radius;
       }
 
       // Dates
@@ -144,6 +174,56 @@ class MapFilters {
     return filters;
   }
 
+  MapFilters copyWith({
+    List<int>? selectedCdRefs,
+    List<Map<String, dynamic>>? selectedTaxonLabels,
+    List<String>? selectedProtection,
+    List<String>? selectedRegulation,
+    bool? selectedZnief,
+    List<String>? selectedWorldwide,
+    List<String>? selectedEuropean,
+    List<String>? selectedNational,
+    List<String>? selectedRegional,
+    List<String>? selectedHabitat,
+    List<String>? selectedGroup2,
+    List<String>? selectedGroup3,
+    List<int>? selectedAreaComIds,
+    List<String>? selectedAreaComNames,
+    List<int>? selectedAreaDepIds,
+    List<String>? selectedAreaDepNames,
+    SpatialFilterType? spatialFilterType,
+    String? geoIntersection,
+    double? radius,
+    DateTime? dateMin,
+    DateTime? dateMax,
+    DateMode? dateMode,
+  }) {
+    return MapFilters(
+      selectedCdRefs: selectedCdRefs ?? this.selectedCdRefs,
+      selectedTaxonLabels: selectedTaxonLabels ?? this.selectedTaxonLabels,
+      selectedProtection: selectedProtection ?? this.selectedProtection,
+      selectedRegulation: selectedRegulation ?? this.selectedRegulation,
+      selectedZnief: selectedZnief ?? this.selectedZnief,
+      selectedWorldwide: selectedWorldwide ?? this.selectedWorldwide,
+      selectedEuropean: selectedEuropean ?? this.selectedEuropean,
+      selectedNational: selectedNational ?? this.selectedNational,
+      selectedRegional: selectedRegional ?? this.selectedRegional,
+      selectedHabitat: selectedHabitat ?? this.selectedHabitat,
+      selectedGroup2: selectedGroup2 ?? this.selectedGroup2,
+      selectedGroup3: selectedGroup3 ?? this.selectedGroup3,
+      selectedAreaComIds: selectedAreaComIds ?? this.selectedAreaComIds,
+      selectedAreaComNames: selectedAreaComNames ?? this.selectedAreaComNames,
+      selectedAreaDepIds: selectedAreaDepIds ?? this.selectedAreaDepIds,
+      selectedAreaDepNames: selectedAreaDepNames ?? this.selectedAreaDepNames,
+      spatialFilterType: spatialFilterType ?? this.spatialFilterType,
+      geoIntersection: geoIntersection ?? this.geoIntersection,
+      radius: radius ?? this.radius,
+      dateMin: dateMin ?? this.dateMin,
+      dateMax: dateMax ?? this.dateMax,
+      dateMode: dateMode ?? this.dateMode,
+    );
+  }
+
   bool get isEmpty =>
       selectedCdRefs.isEmpty &&
       selectedTaxonLabels.isEmpty &&
@@ -159,6 +239,8 @@ class MapFilters {
       selectedGroup3.isEmpty &&
       selectedAreaComIds.isEmpty &&
       selectedAreaDepIds.isEmpty &&
+      geoIntersection == null &&
+      radius == null &&
       dateMin == null &&
       dateMax == null;
 }
