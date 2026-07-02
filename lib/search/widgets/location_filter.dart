@@ -77,6 +77,31 @@ class LocationFilterSection extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 8),
+
+            if (spatialFilterType == SpatialFilterType.circle ||
+                spatialFilterType == SpatialFilterType.polygon)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  spatialFilterType == SpatialFilterType.circle
+                      ? "Le cercle sera dessiné sur la carte après avoir appuyé sur « Appliquer »."
+                      : "Le polygone sera dessiné sur la carte après avoir appuyé sur « Appliquer ».",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+
             const SizedBox(height: 15),
 
             // COMMUNE
@@ -181,7 +206,6 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
       children: [
         Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 5),
-
         TextField(
           controller: _controller,
           decoration: InputDecoration(
@@ -191,9 +215,7 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
           ),
           onChanged: _onChanged,
         ),
-
         const SizedBox(height: 10),
-
         ...suggestions.map((area) {
           final name = area['area_name'] ?? "Inconnu";
           final id = area['id_area'];
@@ -214,7 +236,6 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
             },
           );
         }),
-        
         Wrap(
           spacing: 6,
           children: widget.selectedNames.map((name) {
