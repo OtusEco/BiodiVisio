@@ -146,6 +146,13 @@ class _MapScreenState extends State<MapScreen> {
       parts.add(_filters.selectedAreaDepNames.join(", "));
     }
 
+    // Zone dessinée
+    if (_filters.spatialFilterType == SpatialFilterType.polygon) {
+      parts.add("Zone : polygone");
+    } else if (_filters.spatialFilterType == SpatialFilterType.circle) {
+      parts.add("Zone : cercle");
+    }
+
     return parts.join(" • ");
   }
 
@@ -675,6 +682,26 @@ class _MapScreenState extends State<MapScreen> {
     loadData();
   }
 
+  void _cancelDrawing() {
+    setState(() {
+      // Quitte le mode dessin
+      _drawPolygonMode = false;
+      _drawCircleMode = false;
+
+      // Efface le dessin en cours
+      _polygonPoints.clear();
+      _circleCenter = null;
+      _circleRadius = null;
+
+      // Supprime le filtre spatial
+      _filters = _filters.copyWith(
+        spatialFilterType: null,
+        geoIntersection: null,
+        radius: null,
+      );
+    });
+  }
+
   // BUILD
 
   @override
@@ -754,14 +781,27 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                       if (_drawPolygonMode || _drawCircleMode)
                         Positioned(
-                          bottom: MediaQuery.of(context).padding.bottom + 30,
+                          bottom: MediaQuery.of(context).padding.bottom + 60,
                           right: 20,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              // Quitter le mode dessin
+                              FloatingActionButton(
+                                heroTag: "cancel_draw",
+                                backgroundColor: Colors.grey.shade700,
+                                tooltip: "Annuler",
+                                onPressed: _cancelDrawing,
+                                child: const Icon(Icons.close),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              // Effacer le dessin
                               FloatingActionButton(
                                 heroTag: "delete_draw",
                                 backgroundColor: Colors.red,
+                                tooltip: "Effacer",
                                 onPressed: () {
                                   setState(() {
                                     if (_drawPolygonMode) {
@@ -781,9 +821,13 @@ class _MapScreenState extends State<MapScreen> {
                                 },
                                 child: const Icon(Icons.delete),
                               ),
+
                               const SizedBox(height: 10),
+
+                              // Appliquer
                               FloatingActionButton(
                                 heroTag: "search_draw",
+                                tooltip: "Appliquer",
                                 onPressed: () {
                                   if (_drawPolygonMode) {
                                     _validatePolygon();
