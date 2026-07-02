@@ -96,6 +96,10 @@ class _MapScreenState extends State<MapScreen> {
 
     final parts = <String>[];
 
+    if (_filters.selectedTaxonLabels.isEmpty) {
+      parts.add("Toutes les observations");
+    }
+
     // Taxons (seulement lb_nom pas de nom_rang)
     if (_filters.selectedTaxonLabels.isNotEmpty) {
       final cleaned = _filters.selectedTaxonLabels.map((taxon) {
