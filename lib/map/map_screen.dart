@@ -97,7 +97,7 @@ class _MapScreenState extends State<MapScreen> {
     final parts = <String>[];
 
     if (_filters.selectedTaxonLabels.isEmpty) {
-      parts.add("Toutes les observations");
+      parts.add("Toutes les espèces");
     }
 
     // Taxons (seulement lb_nom pas de nom_rang)
