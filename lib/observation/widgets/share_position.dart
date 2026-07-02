@@ -6,12 +6,14 @@ class MapActionButton extends StatelessWidget {
   final double? lat;
   final double? lon;
   final bool isPolygon;
+  final String title;
 
   const MapActionButton({
     super.key,
     required this.lat,
     required this.lon,
     required this.isPolygon,
+    required this.title,
   });
 
   Future<void> openInMaps(BuildContext context) async {
@@ -44,7 +46,7 @@ class MapActionButton extends StatelessWidget {
                   onTap: () {
                     map.showMarker(
                       coords: Coords(lat!, lon!),
-                      title: "Observation",
+                      title: title,
                     );
                     Navigator.pop(context);
                   },

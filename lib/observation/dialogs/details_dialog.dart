@@ -431,6 +431,11 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                   );
                 }
 
+                final speciesName =
+                    getFirstPart(taxSnapshot.data?["nom_vern"] ?? "").isNotEmpty
+                        ? getFirstPart(taxSnapshot.data?["nom_vern"] ?? "")
+                        : (taxSnapshot.data?["nom_valide"] ?? "Observation");
+
                 return SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -496,8 +501,8 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
 
                                                 final messenger =
                                                     ScaffoldMessenger.of(
-                                                      context,
-                                                    );
+                                                  context,
+                                                );
 
                                                 if (await canLaunchUrl(url)) {
                                                   await launchUrl(
@@ -534,6 +539,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                                   lat: widget.lat,
                                   lon: widget.lon,
                                   isPolygon: widget.isPolygon,
+                                  title: speciesName,
                                 ),
                               ],
                             ),
@@ -839,7 +845,7 @@ class _DetailObservationDialogState extends State<DetailObservationDialog> {
                         ],
                       ),
                       const SizedBox(height: 16),
-
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

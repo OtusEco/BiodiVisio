@@ -83,7 +83,7 @@ class ObservationDialog extends StatelessWidget {
                     Row(
                       children: [
                         if (hasPointObservation)
-                          MapActionButton(lat: lat, lon: lon, isPolygon: false),
+                          MapActionButton(lat: lat, lon: lon, isPolygon: false, title: "Observations"),
                       ],
                     ),
                   ],
