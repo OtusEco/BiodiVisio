@@ -21,6 +21,14 @@ class ServerItem {
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  // Ancien serveurs (pas de chargement des 100 dernières données et format wkt en requête)
+  static const List<String> specialServers = ["https://expert.silene.eu"];
+
+  static bool isSpecialServer(String baseUrl) {
+    final cleanUrl = baseUrl.replaceAll(RegExp(r'/api/?$'), '');
+    return specialServers.contains(cleanUrl);
+  }
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -162,10 +170,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!_apiService.isAuthenticated) return;
 
-      final baseUrl = session["apiBaseUrl"].toString().replaceAll("/api", "");
+      final apiBaseUrl = session["apiBaseUrl"].toString();
 
-      const specialServers = ["https://expert.silene.eu"];
-      final bool skipInitialLoad = specialServers.contains(baseUrl);
+      final bool special = LoginScreen.isSpecialServer(apiBaseUrl);
 
       if (!mounted) return;
 
@@ -174,7 +181,8 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(
           builder: (_) => MapScreen(
             apiService: _apiService,
-            skipInitialLoad: skipInitialLoad,
+            skipInitialLoad: special,
+            useWktGeometry: special,
           ),
         ),
       );
@@ -253,15 +261,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      const specialServers = ["https://expert.silene.eu"];
-      final bool skipInitialLoad = specialServers.contains(baseUrl);
+      final bool special = LoginScreen.isSpecialServer(baseUrl);
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => MapScreen(
             apiService: _apiService,
-            skipInitialLoad: skipInitialLoad,
+            skipInitialLoad: special,
+            useWktGeometry: special,
           ),
         ),
       );

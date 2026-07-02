@@ -39,7 +39,7 @@ Future<MapFilters?> showFilterDialog({
       List<String>.from(currentFilters.selectedAreaDepNames);
 
   SpatialFilterType spatialFilterType = currentFilters.spatialFilterType;
-  String? geoIntersection = currentFilters.geoIntersection;
+  Object? geoIntersection = currentFilters.geoIntersection;
   double? radius = currentFilters.radius;
 
   // Quand ?

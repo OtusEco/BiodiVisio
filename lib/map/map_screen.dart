@@ -25,10 +25,14 @@ class MapScreen extends StatefulWidget {
   final ApiService apiService;
   final bool skipInitialLoad;
 
+  // WKT si ancien serveur
+  final bool useWktGeometry;
+
   const MapScreen({
     super.key,
     required this.apiService,
     this.skipInitialLoad = false,
+    this.useWktGeometry = false,
   });
 
   @override
@@ -634,7 +638,9 @@ class _MapScreenState extends State<MapScreen> {
 
       _filters = _filters.copyWith(
         spatialFilterType: SpatialFilterType.polygon,
-        geoIntersection: polygonToWkt(_polygonPoints),
+        geoIntersection: widget.useWktGeometry
+            ? polygonToWkt(_polygonPoints)
+            : polygonToGeoJson(_polygonPoints),
         radius: null,
       );
     });
@@ -658,7 +664,9 @@ class _MapScreenState extends State<MapScreen> {
 
       _filters = _filters.copyWith(
         spatialFilterType: SpatialFilterType.circle,
-        geoIntersection: pointToWkt(_circleCenter!),
+        geoIntersection: widget.useWktGeometry
+            ? pointToWkt(_circleCenter!)
+            : circleToGeoJson(_circleCenter!, _circleRadius!),
         radius: _circleRadius,
       );
     });

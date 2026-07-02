@@ -26,7 +26,7 @@ class MapFilters {
   final List<String> selectedAreaDepNames;
 
   final SpatialFilterType spatialFilterType;
-  final String? geoIntersection;
+  final Object? geoIntersection;
   final double? radius;
 
   final DateTime? dateMin;
@@ -144,10 +144,12 @@ class MapFilters {
       }
 
       if (spatialFilterType == SpatialFilterType.circle &&
-          geoIntersection != null &&
-          radius != null) {
+          geoIntersection != null) {
         filters["geoIntersection"] = geoIntersection;
-        filters["radius"] = radius;
+
+        if (geoIntersection is String && radius != null) {
+          filters["radius"] = radius;
+        }
       }
 
       // Dates
@@ -192,7 +194,7 @@ class MapFilters {
     List<int>? selectedAreaDepIds,
     List<String>? selectedAreaDepNames,
     SpatialFilterType? spatialFilterType,
-    String? geoIntersection,
+    Object? geoIntersection,
     double? radius,
     DateTime? dateMin,
     DateTime? dateMax,

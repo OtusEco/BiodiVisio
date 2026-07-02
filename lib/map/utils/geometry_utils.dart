@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+// WKT
+
 String polygonToWkt(List<LatLng> points) {
   final coords = points
       .map((p) => "${p.longitude} ${p.latitude}")
@@ -15,6 +17,36 @@ String polygonToWkt(List<LatLng> points) {
 
 String pointToWkt(LatLng point) {
   return "POINT (${point.longitude} ${point.latitude})";
+}
+
+// GeoJSON
+
+Map<String, dynamic> polygonToGeoJson(List<LatLng> points) {
+  final coords = points
+      .map((p) => [p.longitude, p.latitude])
+      .toList();
+
+  coords.add(coords.first);
+
+  return {
+    "type": "Feature",
+    "properties": {},
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [coords],
+    },
+  };
+}
+
+Map<String, dynamic> circleToGeoJson(LatLng center, double radius) {
+  return {
+    "type": "Feature",
+    "properties": {"radius": radius},
+    "geometry": {
+      "type": "Point",
+      "coordinates": [center.longitude, center.latitude],
+    },
+  };
 }
 
 enum MarkerType { point, line, polygon }
