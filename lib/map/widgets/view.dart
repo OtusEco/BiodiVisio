@@ -14,6 +14,14 @@ class MapView extends StatelessWidget {
   final Function(double zoom)? onZoomChanged;
   final VoidCallback? onMapReady;
 
+  // Dessin polygone/cercle
+  final bool drawPolygonMode;
+  final bool drawCircleMode;
+  final List<LatLng> polygonPoints;
+  final LatLng? circleCenter;
+  final double? circleRadius;
+  final ValueChanged<LatLng>? onMapTap;
+
   const MapView({
     super.key,
     required this.markers,
@@ -24,6 +32,14 @@ class MapView extends StatelessWidget {
     required this.currentBaseMap,
     this.onZoomChanged,
     this.onMapReady,
+
+    // Dessin polygone/cercle
+    this.drawPolygonMode = false,
+    this.drawCircleMode = false,
+    this.polygonPoints = const [],
+    this.circleCenter,
+    this.circleRadius,
+    this.onMapTap,
   });
 
   @override
@@ -36,6 +52,9 @@ class MapView extends StatelessWidget {
         interactionOptions: const InteractionOptions(
           flags: ~InteractiveFlag.rotate,
         ),
+        onTap: (_, point) {
+          onMapTap?.call(point);
+        },
         onPositionChanged: (position, hasGesture) {
           onZoomChanged?.call(position.zoom);
         },
@@ -46,13 +65,81 @@ class MapView extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: baseMaps[currentBaseMap]!,
-          userAgentPackageName: 'fr.otuseco.biodivisio/1.1.2',
+          userAgentPackageName: 'fr.otuseco.biodivisio/1.1.1',
         ),
 
-        MarkerLayer(markers: userLocationMarker),
+        // Layer - Position utilisateur
+        MarkerLayer(
+          markers: userLocationMarker,
+        ),
 
-        PolygonLayer(polygons: polygons),
+        // Layer - recherche par polygone
+        PolygonLayer(
+          polygons: [
+            ...polygons,
 
+            // Dessin du polygone
+            if (drawPolygonMode && polygonPoints.length >= 2)
+              Polygon(
+                points: polygonPoints,
+                color: Colors.blue.withValues(alpha: 0.25),
+                borderColor: Colors.blue,
+                borderStrokeWidth: 3,
+              ),
+          ],
+        ),
+
+        // Sommets du polygone
+        if (drawPolygonMode && polygonPoints.isNotEmpty)
+          MarkerLayer(
+            markers: polygonPoints.map((point) {
+              return Marker(
+                point: point,
+                width: 12,
+                height: 12,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+        // Dessin du cercle
+        if (drawCircleMode && circleCenter != null && circleRadius != null)
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: circleCenter!,
+                radius: circleRadius!,
+                useRadiusInMeter: true,
+                color: Colors.blue.withValues(alpha: 0.25),
+                borderColor: Colors.blue,
+                borderStrokeWidth: 3,
+              ),
+            ],
+          ),
+
+        // Centre du cercle
+        if (drawCircleMode && circleCenter != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: circleCenter!,
+                width: 20,
+                height: 20,
+                child: const Icon(
+                  Icons.radio_button_checked,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+
+        // Layer - Clusters observations
         if (markers.isNotEmpty)
           MarkerClusterLayerWidget(
             options: MarkerClusterLayerOptions(
@@ -71,16 +158,22 @@ class MapView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       markers.length.toString(),
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 );
               },
             ),
           ),
-        // Ajout de l'échelle géographique avec Scalebar
+
+        // Barre d'échelle
         Scalebar(
-          textStyle: const TextStyle(color: Colors.black, fontSize: 14),
+          textStyle: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ),
           padding: EdgeInsets.only(
             right: 10,
             left: 10,

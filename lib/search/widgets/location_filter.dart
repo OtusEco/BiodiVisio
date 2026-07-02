@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:biodivisio/core/services/api_service.dart';
 import 'package:biodivisio/core/theme/theme.dart';
 
+import '../models/map_search.dart';
+
 class LocationFilterSection extends StatelessWidget {
   final ApiService apiService;
 
@@ -14,6 +16,9 @@ class LocationFilterSection extends StatelessWidget {
   final List<int> selectedAreaDepIds;
   final List<String> selectedAreaDepNames;
 
+  final SpatialFilterType spatialFilterType;
+  final ValueChanged<SpatialFilterType> onSpatialTypeChanged;
+
   const LocationFilterSection({
     super.key,
     required this.apiService,
@@ -21,6 +26,8 @@ class LocationFilterSection extends StatelessWidget {
     required this.selectedAreaComNames,
     required this.selectedAreaDepIds,
     required this.selectedAreaDepNames,
+    required this.spatialFilterType,
+    required this.onSpatialTypeChanged,
   });
 
   @override
@@ -45,25 +52,101 @@ class LocationFilterSection extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
+            SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<SpatialFilterType>(
+                expandedInsets: EdgeInsets.zero,
+                segments: const [
+                  ButtonSegment(
+                    value: SpatialFilterType.administrative,
+                    label: Text("Lieu"),
+                  ),
+                  ButtonSegment(
+                    value: SpatialFilterType.polygon,
+                    label: Text("Polygone"),
+                  ),
+                  ButtonSegment(
+                    value: SpatialFilterType.circle,
+                    label: Text("Cercle"),
+                  ),
+                ],
+                selected: {spatialFilterType},
+                onSelectionChanged: (selection) {
+                  onSpatialTypeChanged(selection.first);
+                },
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            if (spatialFilterType == SpatialFilterType.circle ||
+                spatialFilterType == SpatialFilterType.polygon)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  spatialFilterType == SpatialFilterType.circle
+                      ? "Le cercle sera dessiné sur la carte après avoir appuyé sur « Appliquer »."
+                      : "Le polygone sera dessiné sur la carte après avoir appuyé sur « Appliquer ».",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 15),
+
             // COMMUNE
-            _AreaSearchField(
-              title: "Commune",
-              hint: "Rechercher une commune",
-              apiCall: apiService.searchCommunes,
-              selectedIds: selectedAreaComIds,
-              selectedNames: selectedAreaComNames,
+            IgnorePointer(
+              ignoring: spatialFilterType != SpatialFilterType.administrative,
+              child: Opacity(
+                opacity: spatialFilterType == SpatialFilterType.administrative
+                    ? 1
+                    : 0.4,
+                child: Column(
+                  children: [
+                    _AreaSearchField(
+                      title: "Commune",
+                      hint: "Rechercher une commune",
+                      apiCall: apiService.searchCommunes,
+                      selectedIds: selectedAreaComIds,
+                      selectedNames: selectedAreaComNames,
+                    ),
+                  ],
+                ),
+              ),
             ),
 
             const SizedBox(height: 15),
 
             // DÉPARTEMENT
-            _AreaSearchField(
-              title: "Département",
-              hint: "Rechercher un département",
-              apiCall: apiService.searchDepartements,
-              selectedIds: selectedAreaDepIds,
-              selectedNames: selectedAreaDepNames,
-            ),
+            IgnorePointer(
+              ignoring: spatialFilterType != SpatialFilterType.administrative,
+              child: Opacity(
+                opacity: spatialFilterType == SpatialFilterType.administrative
+                    ? 1
+                    : 0.4,
+                child: Column(
+                  children: [
+                    _AreaSearchField(
+                      title: "Département",
+                      hint: "Rechercher un département",
+                      apiCall: apiService.searchDepartements,
+                      selectedIds: selectedAreaDepIds,
+                      selectedNames: selectedAreaDepNames,
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -123,7 +206,6 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
       children: [
         Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 5),
-
         TextField(
           controller: _controller,
           decoration: InputDecoration(
@@ -133,9 +215,7 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
           ),
           onChanged: _onChanged,
         ),
-
         const SizedBox(height: 10),
-
         ...suggestions.map((area) {
           final name = area['area_name'] ?? "Inconnu";
           final id = area['id_area'];
@@ -156,7 +236,6 @@ class _AreaSearchFieldState extends State<_AreaSearchField> {
             },
           );
         }),
-
         Wrap(
           spacing: 6,
           children: widget.selectedNames.map((name) {

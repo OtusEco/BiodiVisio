@@ -25,10 +25,14 @@ class MapScreen extends StatefulWidget {
   final ApiService apiService;
   final bool skipInitialLoad;
 
+  // WKT si ancien serveur
+  final bool useWktGeometry;
+
   const MapScreen({
     super.key,
     required this.apiService,
     this.skipInitialLoad = false,
+    this.useWktGeometry = false,
   });
 
   @override
@@ -61,6 +65,13 @@ class _MapScreenState extends State<MapScreen> {
   bool _osmExpanded = false;
 
   Timer? _locationTimer;
+
+  // Dessin polygone/cercle
+  bool _drawPolygonMode = false;
+  bool _drawCircleMode = false;
+  final List<LatLng> _polygonPoints = [];
+  LatLng? _circleCenter;
+  double? _circleRadius;
 
   final MapController _mapController = MapController();
 
@@ -135,6 +146,13 @@ class _MapScreenState extends State<MapScreen> {
       parts.add(_filters.selectedAreaDepNames.join(", "));
     }
 
+    // Zone dessinée
+    if (_filters.spatialFilterType == SpatialFilterType.polygon) {
+      parts.add("Zone : polygone");
+    } else if (_filters.spatialFilterType == SpatialFilterType.circle) {
+      parts.add("Zone : cercle");
+    }
+
     return parts.join(" • ");
   }
 
@@ -196,7 +214,7 @@ class _MapScreenState extends State<MapScreen> {
     final bounds = _computeBounds();
     if (bounds == null) return;
 
-    // Protection contre zoom invalide
+// Protection contre zoom invalide
     final latDiff = (bounds.north - bounds.south).abs();
     final lngDiff = (bounds.east - bounds.west).abs();
 
@@ -384,6 +402,52 @@ class _MapScreenState extends State<MapScreen> {
 
     setState(() => _filters = result);
 
+    if (_filters.spatialFilterType == SpatialFilterType.polygon) {
+      setState(() {
+        _drawPolygonMode = true;
+        _drawCircleMode = false;
+
+        _polygonPoints.clear();
+        _circleCenter = null;
+        _circleRadius = null;
+      });
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Cliquez sur la carte pour dessiner le polygone",
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    if (_filters.spatialFilterType == SpatialFilterType.circle) {
+      setState(() {
+        _drawCircleMode = true;
+        _drawPolygonMode = false;
+
+        _polygonPoints.clear();
+        _circleCenter = null;
+        _circleRadius = null;
+      });
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Premier clic = centre, deuxième clic = rayon",
+          ),
+        ),
+      );
+
+      return;
+    }
+
     if (_filters.isEmpty) {
       if (widget.skipInitialLoad) {
         setState(() {
@@ -539,6 +603,105 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  void _onMapTap(LatLng point) {
+    if (_drawPolygonMode) {
+      setState(() {
+        _polygonPoints.add(point);
+      });
+      return;
+    }
+
+    if (_drawCircleMode) {
+      if (_circleCenter == null) {
+        setState(() {
+          _circleCenter = point;
+        });
+      } else {
+        final distance = const Distance();
+
+        setState(() {
+          _circleRadius = distance.as(
+            LengthUnit.Meter,
+            _circleCenter!,
+            point,
+          );
+        });
+      }
+    }
+  }
+
+  void _validatePolygon() {
+    if (_polygonPoints.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Le polygone doit contenir au moins 3 sommets"),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _drawPolygonMode = false;
+
+      _filters = _filters.copyWith(
+        spatialFilterType: SpatialFilterType.polygon,
+        geoIntersection: widget.useWktGeometry
+            ? polygonToWkt(_polygonPoints)
+            : polygonToGeoJson(_polygonPoints),
+        radius: null,
+      );
+    });
+
+    _isFirstLoad = false;
+    loadData();
+  }
+
+  void _validateCircle() {
+    if (_circleCenter == null || _circleRadius == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Définissez le centre et le rayon du cercle"),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _drawCircleMode = false;
+
+      _filters = _filters.copyWith(
+        spatialFilterType: SpatialFilterType.circle,
+        geoIntersection: widget.useWktGeometry
+            ? pointToWkt(_circleCenter!)
+            : circleToGeoJson(_circleCenter!, _circleRadius!),
+        radius: _circleRadius,
+      );
+    });
+
+    _isFirstLoad = false;
+    loadData();
+  }
+
+  void _cancelDrawing() {
+    setState(() {
+      // Quitte le mode dessin
+      _drawPolygonMode = false;
+      _drawCircleMode = false;
+
+      // Efface le dessin en cours
+      _polygonPoints.clear();
+      _circleCenter = null;
+      _circleRadius = null;
+
+      // Supprime le filtre spatial
+      _filters = _filters.copyWith(
+        spatialFilterType: null,
+        geoIntersection: null,
+        radius: null,
+      );
+    });
+  }
+
   // BUILD
 
   @override
@@ -590,6 +753,12 @@ class _MapScreenState extends State<MapScreen> {
                         userLocationMarker: _userLocationMarker,
                         baseMaps: _baseMaps,
                         currentBaseMap: _currentBaseMap,
+                        drawPolygonMode: _drawPolygonMode,
+                        drawCircleMode: _drawCircleMode,
+                        polygonPoints: _polygonPoints,
+                        circleCenter: _circleCenter,
+                        circleRadius: _circleRadius,
+                        onMapTap: _onMapTap,
                         onZoomChanged: (zoom) {
                           if ((zoom - _currentZoom).abs() > 0.01) {
                             _currentZoom = zoom;
@@ -610,6 +779,67 @@ class _MapScreenState extends State<MapScreen> {
                           });
                         },
                       ),
+                      if (_drawPolygonMode || _drawCircleMode)
+                        Positioned(
+                          bottom: MediaQuery.of(context).padding.bottom + 60,
+                          right: 20,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Quitter le mode dessin
+                              FloatingActionButton(
+                                heroTag: "cancel_draw",
+                                backgroundColor: Colors.grey.shade700,
+                                tooltip: "Annuler",
+                                onPressed: _cancelDrawing,
+                                child: const Icon(Icons.close),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              // Effacer le dessin
+                              FloatingActionButton(
+                                heroTag: "delete_draw",
+                                backgroundColor: Colors.red,
+                                tooltip: "Effacer",
+                                onPressed: () {
+                                  setState(() {
+                                    if (_drawPolygonMode) {
+                                      if (_polygonPoints.isNotEmpty) {
+                                        _polygonPoints.removeLast();
+                                      }
+                                    }
+
+                                    if (_drawCircleMode) {
+                                      if (_circleRadius != null) {
+                                        _circleRadius = null;
+                                      } else if (_circleCenter != null) {
+                                        _circleCenter = null;
+                                      }
+                                    }
+                                  });
+                                },
+                                child: const Icon(Icons.delete),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              // Appliquer
+                              FloatingActionButton(
+                                heroTag: "search_draw",
+                                tooltip: "Appliquer",
+                                onPressed: () {
+                                  if (_drawPolygonMode) {
+                                    _validatePolygon();
+                                  } else {
+                                    _validateCircle();
+                                  }
+                                },
+                                child: const Icon(Icons.search),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
           ),
