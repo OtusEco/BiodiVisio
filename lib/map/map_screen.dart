@@ -19,6 +19,7 @@ import 'utils/geometry_utils.dart';
 import 'widgets/about.dart';
 import 'widgets/appbar.dart';
 import 'widgets/attribution.dart';
+import 'widgets/statistics.dart';
 import 'widgets/view.dart';
 
 class MapScreen extends StatefulWidget {
@@ -46,6 +47,9 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> _markers = [];
   List<Polygon> _polygons = [];
   List<Marker> _userLocationMarker = [];
+
+  // Observations brutes actuellement affichées (stats)
+  List<Map<String, dynamic>> _allObservations = [];
 
   MapFilters _filters = const MapFilters();
 
@@ -319,6 +323,8 @@ class _MapScreenState extends State<MapScreen> {
         }).toList();
 
         _polygons = result.polygons;
+        _allObservations =
+            result.markers.expand((m) => m.observations).toList();
         _loading = false;
         _isFirstLoad = false;
       });
@@ -457,6 +463,7 @@ class _MapScreenState extends State<MapScreen> {
         setState(() {
           _markers = [];
           _polygons = [];
+          _allObservations = [];
           _loading = false;
         });
       } else {
@@ -721,6 +728,10 @@ class _MapScreenState extends State<MapScreen> {
         onUserLocation: _showUserLocation,
         isLocating: _isLocating,
         onFilter: _openFilterDialog,
+        onStatistics: () => showStatisticsBottomSheet(
+          context,
+          observations: _allObservations,
+        ),
         onAbout: () => showAboutBottomSheet(context),
         onLogout: _logout,
       ),
