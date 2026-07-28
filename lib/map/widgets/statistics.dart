@@ -88,11 +88,59 @@ class _SpeciesStatBuilder {
   });
 }
 
+const _moisAbreges = [
+  "Jan",
+  "Fév",
+  "Mar",
+  "Avr",
+  "Mai",
+  "Juin",
+  "Juil",
+  "Août",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Déc",
+];
+
+const _moisComplets = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];
+
+// Répartition du nombre d'observations par mois (date_min)
+List<int> _buildMonthCounts(List<Map<String, dynamic>> observations) {
+  final counts = List<int>.filled(12, 0);
+
+  for (final obs in observations) {
+    final dateMin = obs["date_min"]?.toString();
+    if (dateMin == null || dateMin.isEmpty) continue;
+
+    final date = DateTime.tryParse(dateMin);
+    if (date == null) continue;
+
+    counts[date.month - 1]++;
+  }
+
+  return counts;
+}
+
 Future<void> showStatisticsBottomSheet(
   BuildContext context, {
   required List<Map<String, dynamic>> observations,
 }) async {
   final speciesStats = _buildSpeciesStats(observations);
+  final monthCounts = _buildMonthCounts(observations);
 
   return showModalBottomSheet(
     context: context,
@@ -106,7 +154,10 @@ Future<void> showStatisticsBottomSheet(
         top: false,
         child: SizedBox(
           height: MediaQuery.of(context).size.height * 0.9,
-          child: _StatisticsSheet(speciesStats: speciesStats),
+          child: _StatisticsSheet(
+            speciesStats: speciesStats,
+            monthCounts: monthCounts,
+          ),
         ),
       );
     },
@@ -115,12 +166,17 @@ Future<void> showStatisticsBottomSheet(
 
 class _StatisticsSheet extends StatelessWidget {
   final List<_SpeciesStat> speciesStats;
+  final List<int> monthCounts;
 
-  const _StatisticsSheet({required this.speciesStats});
+  const _StatisticsSheet({
+    required this.speciesStats,
+    required this.monthCounts,
+  });
 
   // Liste des onglets
   static const _tabs = [
     Tab(icon: Icon(Icons.pets), text: "Espèces"),
+    Tab(icon: Icon(Icons.bar_chart), text: "Phénologie"),
   ];
 
   @override
@@ -177,6 +233,7 @@ class _StatisticsSheet extends StatelessWidget {
             child: TabBarView(
               children: [
                 _SpeciesTab(speciesStats: speciesStats),
+                _PhenologyTab(monthCounts: monthCounts),
               ],
             ),
           ),
@@ -370,6 +427,109 @@ class _SpeciesTabState extends State<_SpeciesTab> {
                         );
                       },
                     ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PhenologyTab extends StatelessWidget {
+  final List<int> monthCounts;
+
+  const _PhenologyTab({required this.monthCounts});
+
+  @override
+  Widget build(BuildContext context) {
+    final total = monthCounts.fold<int>(0, (sum, c) => sum + c);
+    final maxCount = monthCounts.fold<int>(0, (m, c) => c > m ? c : m);
+
+    if (total == 0) {
+      return const Center(
+        child: Text(
+          "Aucune observation datée à afficher",
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Row(
+            children: [
+              Text(
+                "Répartition des observations par mois",
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List.generate(12, (index) {
+                final count = monthCounts[index];
+                final ratio = maxCount == 0 ? 0.0 : count / maxCount;
+                final isMax = maxCount > 0 && count == maxCount;
+
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          count > 0 ? "$count" : "",
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Tooltip(
+                              message:
+                                  "${_moisComplets[index]} : $count observation${count > 1 ? 's' : ''}",
+                              child: FractionallySizedBox(
+                                heightFactor: ratio.clamp(0.02, 1.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: isMax
+                                        ? AppColors.primary
+                                        : AppColors.secondary,
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(4),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          _moisAbreges[index],
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
         ),
       ],
     );
