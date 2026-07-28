@@ -719,7 +719,6 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MapAppBar(
-        serverName: Uri.parse(widget.apiService.baseUrl).host,
         baseMaps: _baseMaps,
         currentBaseMap: _currentBaseMap,
         onBaseMapChanged: (value) {
@@ -732,7 +731,11 @@ class _MapScreenState extends State<MapScreen> {
           context,
           observations: _allObservations,
         ),
-        onAbout: () => showAboutBottomSheet(context),
+        hasResults: _allObservations.isNotEmpty,
+        onAbout: () => showAboutBottomSheet(
+          context,
+          serverName: Uri.parse(widget.apiService.baseUrl).host,
+        ),
         onLogout: _logout,
       ),
       body: Column(

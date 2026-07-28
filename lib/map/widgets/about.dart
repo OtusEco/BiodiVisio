@@ -6,7 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:biodivisio/core/theme/theme.dart';
 
-Future<void> showAboutBottomSheet(BuildContext context) async {
+Future<void> showAboutBottomSheet(
+  BuildContext context, {
+  required String serverName,
+}) async {
   // Récupération de PackageInfo pour avoir la version
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = packageInfo.version;
@@ -79,6 +82,39 @@ Future<void> showAboutBottomSheet(BuildContext context) async {
                   ),
                 ),
                 const SizedBox(height: 24),
+
+                // Serveur connecté
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha:0.08),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.dns,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Serveur : $serverName",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
 
                 // Légende
                 Container(
