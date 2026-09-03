@@ -16,10 +16,21 @@ class MapActionButton extends StatelessWidget {
     required this.title,
   });
 
+  static const List<MapApp> _supportedMaps = [
+    MapApp.apple,
+    MapApp.google,
+    MapApp.waze,
+    MapApp.osmand,
+    MapApp.osmandplus,
+  ];
+
   Future<void> openInMaps(BuildContext context) async {
     if (lat == null || lon == null) return;
 
-    final availableMaps = await MapLauncher.installedMaps;
+    final request = MapLauncher.marker(
+      LocationCoords(lat!, lon!, title: title),
+    );
+    final availableMaps = await request.getSupportedMaps(_supportedMaps);
 
     if (availableMaps.isEmpty) return;
     if (!context.mounted) return;
@@ -41,13 +52,10 @@ class MapActionButton extends StatelessWidget {
               const Divider(),
               ...availableMaps.map((map) {
                 return ListTile(
-                  leading: const Icon(Icons.exit_to_app),
-                  title: Text(map.mapName),
+                  leading: Image.memory(map.iconBytes, height: 30, width: 30),
+                  title: Text(map.name),
                   onTap: () {
-                    map.showMarker(
-                      coords: Coords(lat!, lon!),
-                      title: title,
-                    );
+                    map.show();
                     Navigator.pop(context);
                   },
                 );

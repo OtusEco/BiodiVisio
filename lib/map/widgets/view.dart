@@ -65,7 +65,7 @@ class MapView extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: baseMaps[currentBaseMap]!,
-          userAgentPackageName: 'fr.otuseco.biodivisio/1.1.1',
+          userAgentPackageName: 'fr.otuseco.biodivisio/1.2.0',
         ),
 
         // Layer - Position utilisateur
