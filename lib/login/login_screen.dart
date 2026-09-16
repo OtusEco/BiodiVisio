@@ -74,6 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
       name: "GeoNat'îdF",
       url: "https://geonature.arb-idf.fr/geonature",
     ),
+    ServerItem(
+      name: "Ginco Pays de la Loire",
+      url: "https://ginco-paysdelaloire.mnhn.fr/geonature",
+    ),
     ServerItem(name: "Helix (CEN PACA)", url: "https://helix.cen-paca.org"),
     ServerItem(name: "La SHF", url: "https://geonature.lashf.org"),
     ServerItem(name: "Lo Parvi", url: "https://geonature.loparvi.fr"),
